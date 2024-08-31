@@ -1,0 +1,56 @@
+The MySQL sum() function is used to return the total summed value of an expression. 
+=======================================
+
+Consider our database has a table named employees, having the following data. Now, we are going to understand this function with various examples:
+
+1 Execute the following query that calculates the total number of working hours of all employees in the table:
+
+mysql> SELECT SUM(working_hours) AS "Total working hours" FROM employees;  
+==========================================================
+2. MySQL sum() function with WHERE clause
+
+This example is used to return the result based on the condition specified in the WHERE clause. Execute the following query to calculate the total working hours of employees whose working_hours >= 12.
+
+mysql> SELECT SUM(working_hours) AS "Total working hours" FROM employees WHERE working_hours>=12;  
+============================================================
+3. MySQL sum() function with GROUP BY clause
+
+We can also use the SUM() function with the GROUP BY clause to return the total summed value for each group. For example, this statement calculates the total working hours of each employee by using the SUM() function with the GROUP BY clause, as shown in the following query:
+
+mysql> SELECT emp_id, emp_name, occupation, SUM(working_hours) AS "Total working hours" FROM employees GROUP BY occupation;  
+
+Here, we can see that the total working hours of each employee calculates by grouping them based on their occupation.
+
+======================================================
+4. MySQL sum() function with HAVING clause
+
+The HAVING clause is used to filter the group with the sum() function in MySQL. Execute the following statement that calculates the working hours of all employees, grouping them based on their occupation and returns the result whose Total_working_hours>24.
+
+
+mysql> SELECT emp_id, emp_name, occupation,   
+SUM(working_hours) Total_working_hours   
+FROM employees   
+GROUP BY occupation   
+HAVING SUM(working_hours)>24;  
+========================================================
+
+5. MySQL sum() function with DISTINCT clause
+
+
+MySQL uses the DISTINCT keyword to remove the duplicate rows from the column name. This clause can also be used with sum() function to return the total summed value of a Unique number of records present in the table.
+
+Execute the following query that removes the duplicate records in the working_hours column of the employee table and then calculates the sum:
+
+mysql> SELECT emp_name, occupation,   
+SUM(DISTINCT working_hours) Total_working_hours  
+FROM employees   
+GROUP BY occupation;  
+===========================================================
+PRACTICAL
+MYSQLTUTORIAL
+
+Use the table orderdetails from the sample database.
+1.uses the SUM() function to get the total number of items of the order details:
+2. calculate the total for the order number 10110,  use the SUM()
+3. calculate the total amount of each order by using the SUM() function with the GROUP BY clause 
+

@@ -1,0 +1,54 @@
+Some rules define a database to be the correct RDBMS. These rules were developed by Dr. Edgar F. Codd (E.F. Codd) in 1985, who has vast research knowledge on the Relational Model of database Systems. Codd presents his 13 rules for a database to test the concept of DBMS against his relational model, and if a database follows the rule, it is called a true relational database (RDBMS).
+
+Rule 0: The Foundation Rule
+==>For any system that is advertised as or claimed to be a relational database management system, that system must be able to manage database entirely through its relational capabilities.
+
+Rule 1: Information Rule
+A database contains various information, and this information must be stored in each cell of a table in the form of rows and columns.
+
+Rule 2: Guaranteed Access Rule
+Every single or precise data (atomic value) may be accessed logically from a relational database using the combination of primary key value, table name, and column name.
+
+Rule 3: Systematic Treatment of Null Values
+
+This rule defines the systematic treatment of Null values in database records. The null value has various meanings in the database, like missing the data, no value in a cell, inappropriate information, unknown data and the primary key should not be null.
+
+Rule 4:
+Dynamic online catalog based on the relational model
+It represents the entire logical structure of the descriptive database that must be stored online and is known as a database dictionary. It authorizes users to access the database and implement a similar query language to access the database.
+
+Rule 5: Comprehensive Data SubLanguage Rule
+
+The relational database supports various languages, and if we want to access the database, the language must be the explicit, linear or well-defined syntax, character strings and supports the comprehensive: data definition, view definition, data manipulation, integrity constraints, and limit transaction management operations. If the database allows access to the data without any language, it is considered a violation of the database.
+
+Rule 6: The View Updating Rule
+
+All views that are theoretically updatable must also be updatable by the system.
+
+Rule 7: High-level Insert, Update, and Delete
+
+A successful database system must possess the feature of facilitating high-level insertions, updates, and deletions that can grant users the ability to conduct these operations with ease through a single query.
+
+Rule 8: Physical Data Independence
+
+Application programs and activities should remain unaffected when changes are made to the physical storage structures or methods.
+
+Rule 9: Logical Data Independence Rule
+
+It is similar to physical data independence. It means, if any changes occurred to the logical level (table structures), it should not affect the user's view (application). For example, suppose a table either split into two tables, or two table joins to create a single table, these changes should not be impacted on the user view application.
+
+Rule 10: Integrity Independence Rule
+
+A database must maintain integrity independence when inserting data into table's cells using the SQL query language. All entered values should not be changed or rely on any external factor or application to maintain integrity
+
+
+Rule 11:Distribution independence
+The end-user must not be able tosee the data is distributed over various locations.users should
+always get the impression that the data is located at one site only.
+
+Rule 12: Non Subversion Rule
+
+The non-submersion rule defines RDBMS as a SQL language to store and manipulate the data in the database. If a system has a low-level or separate language other than SQL to access the database system, it should not subvert or bypass integrity to transform data.
+
+
+

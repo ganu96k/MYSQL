@@ -1,0 +1,20 @@
+
+
+Types of Schema
+
+main objective is logical data independence and physical data independence
+
+External schema/view level − It is schema at view level. It is the highest level of a schema which defines the views for end users.
+view will be different for every user.
+ex:front end developer
+ 
+    Logical schema − It is a database design at the logical level. Programmers construct applications using logical schema.
+acts like a blue print created by using er diagram
+ex database designer
+
+   Physical schema − It is a database design at the physical level.It is hidden below the logical schema and can be changed easily without affecting the application programs.
+ex: database administartor
+
+
+    
+======================================================================================

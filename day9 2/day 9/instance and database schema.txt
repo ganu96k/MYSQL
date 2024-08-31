@@ -1,0 +1,59 @@
+
+=========================================================
+Instance:
+==>The data which is stored in the database at a particular moment of time is called an instance of the database.
+==>An Instance is the state of an operational database with data at any given time. The instances can be changed by certain CRUD operations, such as like addition, and deletion of data. It may be noted that any search query will not make any kind of changes in the instances. 
+These refer to a collection of all the information and data stored at any given moment.
+Example:
+Let’s say a table teacher in our database whose name is School, suppose the table has 50 records so the instance of the database has 50 records for now and tomorrow we are going to add another fifty records so tomorrow the instance has a total of 100 records. This is called an instance. 
+
+Example
+
+A database instance for the Person database can be (User1,emai.com,11345679,addr) So the person construct will contain their individual entities in the attributes called as instance. This is shown below −
+
+Person
+Name	Email	Phone no
+BOB	kksd@yasd.com	2343435
+JANU	werwr@sdas.in	5345464
+PRIYA	wefrwer@sdf.com	2342342
+
+============================================================================
+Schema
+
+Schema is the overall description of the database. The basic structure of how the data will be stored in the database is called schema. 
+The overall design of a database is called schema.
+A database schema is the skeleton structure of the database. It represents the logical view of the entire database. 
+A schema contains schema objects like table, foreign key, primary key, views, columns, data types, stored procedure, etc.
+A database schema can be represented by using the visual diagram. That diagram shows the database objects and relationship with each other.
+Example
+
+A database schema for a person will have fields for name, email, phone and address as shown below −
+
+Person
+Name	Email	Phone no
+
+
+A database schema is designed by the database designers to help programmers whose software will interact with the database. The process of database creation is called data modeling.
+In the database, actual data changes quite frequently. For example, in the given figure, the database changes whenever we add a new grade or add a student. The data at a particular moment of time is called the instance of the database.
+
+A schema diagram can display only some aspects of a schema like the name of record type, data type, and constraints
+
+Here the DBMS schema means designing the database. For example, if we take the example of the employee table. The employee table contains the following attributes. These attributes are EMP_ID, EMP_ADDRESS, EMP_NAME, EMP_CONTACT. These are the schema of the employee table.
+====================================================
+In short, the schema is the blueprint of the database, while the instance is the actual data that is in the database. The schema is the database’s design, and the instance is the data it contains.
+
+When you change the schema, you change the structure of the database. When you change the instance, you change the data content.
+===================================================================
+Both of these help in describing the data available in a database, but there is a fundamental difference between Schema and Instance in DBMS. Schema refers to the overall description of any given database. Instance basically refers to a collection of data and Information that the database stores at any particular moment.
+
+
+Difference Between Schema and Instance
+Schema 	Instance
+It is the overall description of the database. 	
+It is the collection of information stored in a database at a particular moment.
+The schema is same for the whole database. 	
+Data in instances can be changed using addition, deletion, and updation.
+Does not change Frequently. 	
+Changes Frequently.
+Defines the basic structure of the database i.e. how the data will be stored in the database. 	It is the set of Information stored at a particular time.
+==============================================

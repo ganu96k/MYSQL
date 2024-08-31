@@ -1,0 +1,196 @@
+ Subquery:
+
+//find out which employee is getting highest salary?
+select * from emp where sal=max(salary);
+
+select * from <TN> where <condition>(select * from...(select * from...));
+
+As per the execution process of subquery,it again classified into two types
+1)non-corelated subquery
+first inner query will execute later outer query will execute
+
+1)single row subquery:
+when a subquery return a single value then we called as single row subquery
+we can use following operators
+= ,<, >, <= ,>=, !=
+
+waq to display emp details who are earning first highest salary?
+//select * from myemp where salary=(select max(salary) from myemp);
+it returns only single value.
+
+waq to display the senior most employee details from emp table?
+//select * from myemp where hire_date=(select min(hire_date) from myemp);
+
+waq to display employees whose job is same as the employee lex job
+ select job_id from myemp where first_name='lex';
+mysql> select * from myemp where job_id=(select job_id from myemp where first_name='lex');
+
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+| EMP_ID | FIRST_NAME | LAST_NAME | EMAIL    | HIRE_DATE  | JOB_ID | SALARY   | COMMISSION_PCT | MGR_ID | DEP_ID |
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+|    101 | Neena      | Kochhar   | NKOCHHAR | 1987-06-18 | AD_VP  | 17000.00 |           0.00 |    100 |     90 |
+|    102 | Lex        | De Haan   | LDEHAAN  | 1987-06-19 | AD_VP  | 17000.00 |           0.00 |    100 |     90 |
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+
+self join:
+mysql> select e2.first_name name,e2.job_id job from myemp e1,myemp e2 where e1.job_id=e2.job_id and e1.first_name='lex';
++-------+-------+
+| name  | job   |
++-------+-------+
+| Neena | AD_VP |
+| Lex   | AD_VP |
++-------+-------+
+
+waq to display employees whose salary is more than the maximum salary of the job is "salesman"
+ select * from myemp where salary > (select max(salary) from myemp where job_id='AC_ACCOUNT');
+
+waq to find out second highest salary from emp table?
+mysql> select max(salary) from myemp where salary < (select max(salary) from myemp);
+
+waq to display employees details who are earning second highest salary?
+select * from myemp where salary =(select max(salary) from myemp where salary < (select max(salary) from myemp));
+
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+| EMP_ID | FIRST_NAME | LAST_NAME | EMAIL    | HIRE_DATE  | JOB_ID | SALARY   | COMMISSION_PCT | MGR_ID | DEP_ID |
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+|    101 | Neena      | Kochhar   | NKOCHHAR | 1987-06-18 | AD_VP  | 17000.00 |           0.00 |    100 |     90 |
+|    102 | Lex        | De Haan   | LDEHAAN  | 1987-06-19 | AD_VP  | 17000.00 |           0.00 |    100 |     90 |
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+
+
+waq to get employee details who are getting third highest salary
+mysql> select max(salary) from myemp where salary <(select max(salary) from myemp where salary <(select max(salary) from
+ myemp));
++-------------+
+| max(salary) |
++-------------+
+|    14000.00 |
++-------------+
+
+mysql> select * from myemp where salary =(select max(salary) from myemp where salary <(select max(salary) from myemp whe
+re salary <(select max(salary) from myemp)));
++--------+------------+-----------+---------+------------+--------+----------+----------------+--------+--------+
+| EMP_ID | FIRST_NAME | LAST_NAME | EMAIL   | HIRE_DATE  | JOB_ID | SALARY   | COMMISSION_PCT | MGR_ID | DEP_ID |
++--------+------------+-----------+---------+------------+--------+----------+----------------+--------+--------+
+|    145 | John       | Russell   | JRUSSEL | 1991-08-01 | SA_MAN | 14000.00 |           0.40 |    100 |     80 |
++--------+------------+-------
+
+=======================================================================================
+to find 1st highest we need to write 2 queries
+to find 2nd highest we need to write 3 queries
+to find nth highest we need to write n+1 queries
+===============================================================================
+2)multiple row subquery
+when a subquery returns more than one value ,we can use  the following operators
+IN,ANY,ALL
+
+waq to display employees whose employee job is same as  the job of the employee lex,donald
+
+==>select job_id from myemp where first_name='lex' or  first_name='donald';
++----------+
+| job_id   |
++----------+
+| AD_VP    |
+| SH_CLERK |
++----------+
+
+mysql> select * from myemp where job_id=(select job_id from myemp where first_name='lex' or  first_name='donald');
+ERROR 1242 (21000): Subquery returns more than 1 row
+
+==> select * from myemp where job_id IN(select job_id from myemp where first_name='lex' or  first_name='donald');
+
+==>select * from myemp where job_id IN(select job_id from myemp where first_name IN ('lex' , 'donald'));
+==============================================================================================
+waq to display employees who are earning minimum and maximum salary from emp table
+
+mysql> select * from myemp where salary IN(select min(salary),max(salary) from myemp);
+ERROR 1241 (21000): Operand should contain 1 column(s)
+//single column value cannot be compared with multiple values 
+
+two table's data we want to combine as a 1 table use set operators
+if we want to club two tables column data into one table column data we should use set operators
+
+mysql> select max(salary) from myemp
+    -> union
+    -> select min(salary) from myemp;
++-------------+
+| max(salary) |
++-------------+
+|    24000.00 |
+|     2100.00 |
++-------------+
+2 rows in set (0.00 sec)
+
+==>mysql> select * from myemp where salary in(select max(salary) from myemp
+    -> union
+    -> select min(salary) from myemp);
++--------+------------+-----------+---------+------------+----------+----------+----------------+--------+--------+
+| EMP_ID | FIRST_NAME | LAST_NAME | EMAIL   | HIRE_DATE  | JOB_ID   | SALARY   | COMMISSION_PCT | MGR_ID | DEP_ID |
++--------+------------+-----------+---------+------------+----------+----------+----------------+--------+--------+
+|    100 | Steven     | King      | SKING   | 1998-06-17 | AD_PRES  | 24000.00 |           0.00 |      0 |     90 |
+|    132 | TJ         | Olson     | TJOLSON | 1987-07-19 | ST_CLERK |  2100.00 |           0.00 |    121 |     50 |
++--------+------------+-----------+---------+------------+----------+----------+----------------+--------+--------+
+
+waq to display employees who are getting maximum salary from each jobwise?
+
+
+mysql> select job_id,max(salary) from myemp group by job_id;
+mysql> select * from myemp where salary IN(select max(salary) from myemp group by job_id);
+
+waq to display the senior most employee from each department no wise?
+select * from myemp where hire_date IN(select min(hire_date) from myemp group by dep_id);
+=======================================================================
+WORKING WITH "ANY" & "ALL" OPERATORS
+
+ANY:it return true if any value is satisfied with the given conditional value in the list.
+ex: x(25)> ANY(10,20,30)
+if x=45===>true
+if x=9==>false
+if x=25==>true
+
+ALL:
+It return true if all values are satisfied with the given conditional value in the list
+ex:
+x(25)>ALL (10,20,30)
+
+if x=45===>true
+if x=09==>false
+if x=25==>false
+
+waq to display employees whose salary is more than any "ST_MAN" salary?
+
+mysql> select salary from myemp where job_id='ST_MAN';
++---------+
+| salary  |
++---------+
+| 8000.00 |
+| 8200.00 |
+| 7900.00 |
+| 6500.00 |
+| 5800.00 |
++---------+
+//select salary from myemp where salary > ANY(8200,7900,6500,5800);
+
+
+mysql> select * from myemp where salary > ANY(SELECT SALARY FROM MYEMP WHERE JOB_ID='ST_MAN');
+
+mysql> select * from myemp where salary > ALL(SELECT SALARY FROM MYEMP WHERE JOB_ID='ST_MAN');
+===========================================================================
+3)multiple column subquery
+
+comparing multiple columns values of inner query with multiple columns values of outer query is called as multiple column subquery
+
+select * from tablename
+where col1,col2 IN select(col1,col2 from....)
+
+waq to display employee whose job_id,mgr_id is as same as the job_id,mgr_id of the employee 'neena';
+mysql> select * from myemp where(job_id,mgr_id) IN (select job_id,mgr_id from myemp where first_name='neena');
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+| EMP_ID | FIRST_NAME | LAST_NAME | EMAIL    | HIRE_DATE  | JOB_ID | SALARY   | COMMISSION_PCT | MGR_ID | DEP_ID |
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+|    101 | Neena      | Kochhar   | NKOCHHAR | 1987-06-18 | AD_VP  | 17000.00 |           0.00 |    100 |     90 |
+|    102 | Lex        | De Haan   | LDEHAAN  | 1987-06-19 | AD_VP  | 17000.00 |           0.00 |    100 |     90 |
++--------+------------+-----------+----------+------------+--------+----------+----------------+--------+--------+
+=========================================================================
+
+

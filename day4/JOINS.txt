@@ -1,0 +1,406 @@
+SELECTION:
+To retrieve information from the table with conditions(where)
+whatever the information is retrieved ,it is retrieving from single table.
+single table operations
+
+
+==>requriment is in  depatment table how many employees are working in particular department
+==>problem is my req data is in multiple tables
+==>two tables should be join
+==>joins are used to retrive data from multiple tables 
+
+==================================================================
+JOINS:
+ It is used to retrieve data from multiple tables. It is performed whenever you need to 
+fetch records from two or more tables.
+
+joins statements can be written in 2 formats:
+A)Non- ansi joins-->non portable --->without any changes as it is query written in mysql db,
+we  cannot move to another db.based 
+on another db ,i need to do some changes which will supporting to that database.query format
+ is not supported in another db.
+we need to do modifications according to the db in which we want to execute the query,then on
+ly query will be executed
+==>non ansi join is of three types 
+equi join
+non equi join
+self join
+
+B)Ansi-Format Joins(new style format): whenever we are retrieving the data with on keyword join condition
+==>portable and compatible
+
+non ansi  vrs  ansi
+1)to join tables based on "where" clause condition
+1)to join tables based on "on" clause condition
+2)not portable
+2)portable(we can move a join statement without any changes as it is to another database)
+=======================================================
+============================================================
+Equi join:
+==>retrieving data from multiple tables based on an "=" operator condition.
+==>on which tables we need to join , compulsory we need to have 1 common column and those column datatypes must be match 
+then only joins can be easily performed.
+==>it always retrieve matching rows.
+
+ex:
+ create table course(cid int,cname varchar(10),cfee int);
+ insert into course values(10,'oracle',2500);
+ insert into course values(20,'java',5000);
+ insert into course values(30,'.net',6000);
+
+create table student(sid int,sname varchar(255),cid int);
+ insert into student values(1021,'smith',10);
+						(1022,'allen',10);
+						(1023,'duck',20);
+						(1024,'miller',NULL);
+
+syntax:
+select */colname from table1,table2
+where equality condition
+
+EX:
+WQA to retrieve student and the corresponding course details from tables by using equi join
+
+select * from student,course where student.cid=course.cid;
+select * from student s,course c where s.cid=c .cid;
+
+==>cant use "on" in place of where in case of non ansi joins
+
+EX:
+WAQ to display students who are joined in oracle course?
+==>select sname,cname from student s,course c
+    -> where s.cid=c.cid and cname='oracle';
+
+ansi==> select sname,cname from student s
+    ->  inner join course c on s.cid=c.cid where cname='oracle';// joining cond + filtering condition
+
+ansi==>select sname,cname from student s
+    ->  inner join course c on s.cid=c.cid and cname='oracle';
+
+
+EX 4:WAQ TO DISPLAY EMPLOYEE WHO ARE WORKING IN CHICAGO
+
+ CREATE TABLE DEPT(DEP_ID INT,DNAME VARCHAR(255),LOCATION VARCHAR(255));
+ INSERT INTO DEPT VALUES(10,'ACC','NEW YORK'),(20,'RESEARCH','GERMANY'),(30,'CLERK','CHICAGO'),(40,'OP','BOSTON');
+
+
+ SELECT FIRST_NAME,LOCATION FROM MYEMP E,DEPT D
+    -> WHERE E.DEP_ID=D.DEP_ID AND LOCATION='CHICAGO';
+
+ansi==>SELECT FIRST_NAME,LOCATION FROM MYEMP E INNER JOIN DEPT D
+    -> ON E.DEP_ID=D.DEP_ID AND LOCATION='CHICAGO';
+ansi==> SELECT FIRST_NAME,LOCATION FROM MYEMP E INNER JOIN DEPT D
+    -> ON E.DEP_ID=D.DEP_ID WHERE LOCATION='CHICAGO';
+
+EX 5:WAQ to display sum of salaries of department names wise?
+ select dname,sum(salary) from myemp e,dept d
+    -> where e.dep_id=d.dep_id group by dname;
+
+ ansi==>select dname,sum(salary) from myemp e inner join dept d
+    -> on e.dep_id=d.dep_id group by dname;
+
+ex 6:
+waq to display departments in which department sum of salary is more than 10000
+ select dname,sum(salary) from myemp e,dept d
+    -> where e.dep_id=d.dep_id
+ group by dname
+having sum(salary)>10000;
+
+ansi==>select dname,sum(salary) from myemp e inner join dept d
+    -> on e.dep_id=d.dep_id
+ group by dname
+having sum(salary)>10000;
+
+==============================================
+TYPES OF ANSI JOIN
+whenever we are retrieving the data with where keyword join condition
+
+
+ 1)MySQL INNER JOIN (or sometimes called simple join)
+==>Retrieve the data from multiple table based on equality conditions.
+==>one common coloumn is necessary
+==>matching rows will be retrived based on equality conditions
+==>common coloumn datatypes must be same
+==> return all rows from multiple tables where the join condition is satisfied.
+
+SYNTAX:
+
+	The syntax of inner join is given below:
+SELECT [column_names | *]
+FROM table_name1
+INNER JOIN table_name2
+ON table_name1.column_name = table_name2.column_name;
+
+create table student(SID INT,SNAME VARCHAR(20),SMAILID VARCHAR(40),COURSEID INT);
+-- insert
+INSERT INTO STUDENT VALUES (101, 'ADAM', 'ADAM@GMAIL.COM',10);
+INSERT INTO STUDENT VALUES (102, 'Dave', 'DAVE@GMAIL.COM',20);
+INSERT INTO STUDENT VALUES (103, 'SMITH', 'SMITH@GMAIL.COM',30);
+SELECT * FROM STUDENT;
+
+CREATE TABLE COURSE(COURSEID INT,CNAME VARCHAR(40),CFEE DECIMAL(6,2));
+INSERT INTO COURSE VALUES(10,'C',2000.00);
+INSERT INTO COURSE VALUES(20,'C++',3000.00);
+
+INSERT INTO COURSE VALUES(40,'JAVA',4000.00);
+
+INSERT INTO COURSE VALUES(50,'ADV JAVA',5000.00);
+SELECT * FROM COURSE;
+
+ 
+===========================================
+WHICHEVER THE COMMOM COL,THAT COL SHOULD BE TAKEN AS JOIN CONDITION.
+
+SELECT * FROM STUDENT INNER JOIN COURSE ON COURSEID=COURSEID;
+//ERROR
+SELECT * FROM STUDENT INNER JOIN COURSE ON STUDENT.COURSEID=COURSE.
+COURSEID;
+//matching data will display
+
+===================================================================================
+EX 2:
+MySQL Inner Join Example
+
+Let us first create two tables "students" and "technologies" that contains the following data:
+To select records from both tables, execute the following query:
+
+    SELECT stud_fname, stud_lname, city, technology    
+    FROM students   
+    INNER JOIN technologies    
+    ON students.student_id = technologies.tech_id; 
+=====================================================================
+EX 3:
+
+
+ SELECT stud_fname, stud_lname, city, technology    
+FROM students   
+INNER JOIN technologies    
+ON students.student_id = technologies.tech_id GROUP BY inst_name;
+
+==========================================================================
+=======================================================
+EX 5 Inner Join with WHERE Clause
+
+The WHERE clause enables you to return the filter result. The following example illustrates this clause with Inner Join:
+
+    SELECT tech_id, inst_name, city, technology    
+    FROM students   
+    INNER JOIN technologies    
+    on students.student_id = technologies.tech_id  WHERE technology = "Java";
+
+
+========================================================================================
+ MySQL  OUTER JOIN 
+====================
+==>By using equi join/inner join , we can retrieve matching rows but not unmatching rows.
+to Retrieve the matching and unmatching data from multiple table ,user outer join.
+
+LEFT OUTER JOIN : Retrieve the matching data from all tables but unmatching data from the left hand side table only.
+In other words, the Left Join clause returns all the rows from the left table and matched records from the right table 
+or returns Null if no matching record found. This Join can also be called a Left Outer Join clause. So, 
+Outer is the optional keyword to use with Left Join.
+
+
+SYNTAX:
+
+    SELECT columns    
+    FROM table1    
+    LEFT [OUTER] JOIN table2    
+    ON Join_Condition;  
+
+In the above syntax, table1 is the left-hand table, and table2 is the right-hand table. This clause returns all records from table1 and matched records from table2 based on the specified join condition.
+======================================================================================
+EX 1:
+
+
+ANSI ==>USE mysql11
+ SELECT * FROM student S LEFT OUTER JOIN COURSE C  ON S.cID=C.CID;
+
+ex 2:
+SELECT * FROM student S LEFT OUTER JOIN COURSE C  ON S.cID=C.CID where sname='smith';
+
+
+ex 3:
+ SELECT * FROM student S LEFT OUTER JOIN COURSE C  ON S.cID=C.CID where sname='smith' or sname='miller';
+
+=====================================================================================================================
+MySQL LEFT JOIN Example
+
+Let us take some examples to understand the working of Left Join or Left Outer Join clause:
+LEFT JOIN clause for joining two tables
+
+useHere, we are going to create two tables "customers" and "orders" that contains the following data:
+
+    SELECT customers.customer_id, cust_name, price, date  
+    FROM customers  
+    LEFT JOIN orders ON customers.customer_id = orders.customer_id;  
+===================================================================
+============================================================
+MySQL LEFT JOIN with Group By Clause
+ SELECT count(sname),cname FROM student S LEFT OUTER JOIN COURSE C  ON S.cID=C.CID
+    -> group by cname;
+
+ SELECT count(sname),cname FROM student S LEFT OUTER JOIN COURSE C  ON S.cID=C.CID
+    -> GROUP BY CNAME
+    -> ORDER BY CNAME;
+//NULL WILL APPEAR AT FIRST
+
+ SELECT count(sname),cname FROM student S LEFT OUTER JOIN COURSE C  ON S.cID=C.CID
+    -> GROUP BY CNAME
+    -> ORDER BY CNAME DESC;
+//NULL WILL APPEAR AT LAST
+================================================================
+LEFT JOIN with WHERE Clause
+SELECT count(sname),cname FROM student S LEFT OUTER JOIN COURSE C  ON S.cID=C.CID
+    -> group by cname
+    -> having count(sname)>1;
+========================================================
+
+===================================================================================
+			RIGHT OUTER JOIN 
+
+    
+RIGHT OUTER JOIN : Retrieve the matching data from all tables but unmatching data from the RIGHT hand side table only.
+The Right Join is used to joins two or more tables and returns all rows from the right-hand table, and only those results from the other table that fulfilled the join condition. If it finds unmatched records from the left side table, it returns Null value.
+
+RIGHT JOIN Syntax
+
+The following are the syntax of Right Join that joins tables Table1 and Table2:
+
+    SELECT column_list  
+    FROM Table1  
+    RIGHT [OUTER] JOIN Table2   
+    ON join_condition;  
+
+//SELECT sname,cname FROM student S right OUTER JOIN COURSE C  ON S.cID=C.CId;
+//SELECT * FROM student S right OUTER JOIN COURSE C  ON S.cID=C.CID where sname='smith' or sname='miller';
+//SELECT * FROM student S right OUTER JOIN COURSE C  ON S.cID=C.CId;
+// SELECT * FROM student S right OUTER JOIN COURSE C  ON S.cID=C.CID where sname='smith' or cname='.net';
+ SELECT count(cname),cname,sname FROM student S right OUTER JOIN COURSE C  ON S.cID=C.CID
+// SELECT count(cname),cname,sname FROM student S right OUTER JOIN COURSE C  ON S.cID=C.CID
+    -> group by cname,sname;
+// SELECT sname,sid,cname,cfee FROM student S right OUTER JOIN COURSE C  ON S.cID=C.CID
+    -> order by cfee;
+
+====================================================================================
+
+CROSS JOIN:PRODUCT OF ROWS OF MULTIPLE TABLES
+NO CONDITION REQ
+
+MySQL CROSS JOIN is used to combine all possibilities of the two or more tables and returns the result that contains every row from all contributing tables. The CROSS JOIN is also known as CARTESIAN JOIN, which provides the Cartesian product of all associated tables. The Cartesian product can be explained as all rows present in the first table multiplied by all rows present in the second table. It is similar to the Inner Join, where the join condition is not available with this clause.
+
+==>To join two or more than two tables data without join condition.
+==>there is no requirement of common coloumn
+
+The CROSS JOIN keyword is always used with the SELECT statement and must be written after the FROM clause. The following syntax fetches all records from both joining tables:
+
+    SELECT column-lists  
+    FROM table1  
+    CROSS JOIN table2;  
+=================================================================================
+
+SELECT * FROM STUDENT  CROSS JOIN COURSE ;
+
+SELECT * FROM STUDENT  CROSS JOIN COURSE
+    -> WHERE SID>=1000;
+
+SELECT * FROM STUDENT  CROSS JOIN COURSE
+    -> WHERE SID>=1000;
+ORDER  BY SID;
+
+
+select i1.name,i2.price,i2.name,i2.price
+    -> ,i1.price+i2.price total_bill from
+    -> item1 i1 cross join item2 i2;
+
+ select i1.name,i2.price,i2.name,i2.price
+    -> ,i1.price+i2.price total_bill from
+    -> item1 i1 cross join item2 i2
+    -> WHERE I1.NAME='BURGER' AND I2.NAME='PEPSI';
+
+========================================================================================
+
+===============================================================================
+ NATURAL JOIN  -- 
+
+==> A natural join is a type of join operation that creates an implicit join by combining tables based on columns with the same name and data type.
+==>USE TO AVOID DUPLICATE COLOUMNS FROM JOINT TABLES -
+
+
+When we combine rows of two or more tables based on a common column between them, this operation is called joining. A natural join is a type of join operation that creates an implicit join by combining tables based on columns with the same name and data type. It is similar to the INNER or LEFT JOIN, but we cannot use the ON with natural join as we used in them.
+
+Points to remember:
+
+    There is no need to specify the column names to join.
+    The resultant table always contains unique columns.
+    Do not use the ON clause.
+
+
+Syntax:
+
+The following is a basic syntax to illustrate the natural join:
+
+    SELECT [column_names | *]   
+    FROM table_name1   
+    NATURAL JOIN table_name2;  
+
+
+
+
+
+
+
+mysql> select * from student natural join course;
++------+------+-------+--------+------+
+| cid  | sid  | sname | cname  | cfee |
++------+------+-------+--------+------+
+|   10 | 1021 | smith | oracle | 2500 |
+|   10 | 1022 | allen | oracle | 2500 |
+|   20 | 1023 | duck  | java   | 5000 |
++------+------+-------+--------+------+
+===========================================================================
+select * from student natural join course
+    -> WHERE SID>1020;
+
+
+=============================================================================
+Difference between Natural Join and Inner Join
+SN 	Natural Join 	Inner Join
+1. 	It joins the tables based on the same column names and their data types. 
+	It joins the tables based on the column name specified in the ON clause explicitly.
+2. 	It always returns unique columns in the result set. 	
+It returns all the attributes of both tables along with duplicate columns that match the ON clause condition.
+3. 	If we have not specified any condition in this join, it returns the records based on the common columns. 	
+It returns only those rows that exist in both tables.
+4. 	The syntax of natural join is given below:
+SELECT [column_names | *]
+FROM table_name1
+NATURAL JOIN table_name2; 
+
+	The syntax of inner join is given below:
+SELECT [column_names | *]
+FROM table_name1
+INNER JOIN table_name2
+ON table_name1.column_name = table_name2.column_name;
+=================================================================================================
+=====================================================================
+   
+Difference between natural join and equi join
+1)to eliminate duplicate columns from resultset automatically
+1)no
+2)same column name is mandatory to have in both tables
+2)optional
+3)join condition written by system by default with based on common column name along  with = operator
+3)join condition written by user based on common column name(optinal) along  with = operator
+======================================================================================================
+
+
+
+
+
+
+
+
+
+
+

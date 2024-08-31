@@ -1,0 +1,165 @@
+SQL Aggregate Functions
+
+1 MySQL's aggregate function is used to perform calculations on multiple values and return the result in a single value like the average of all values,
+ the sum of all values, and maximum & minimum value among certain groups of values.
+
+2 Aggregate functions are often used with the GROUP BY clause of the SELECT statement. 
+The GROUP BY clause splits the result-set into groups of values and the aggregate function can be used to return
+ a single value for each group.
+
+The most commonly used SQL aggregate functions are:
+
+MIN() - returns the smallest value within the selected column
+MAX() - returns the largest value within the selected column
+COUNT() - returns the number of rows in a set
+SUM() - returns the total sum of a numerical column
+AVG() - returns the average value of a numerical column
+Aggregate functions ignore null values (except for COUNT()).
+
+Syntax:
+The following are the syntax to use aggregate functions in MySQL:
+
+    function_name (DISTINCT | expression)  
+
+In the above syntax, we had used the following parameters:
+First, we need to specify the name of the aggregate function.
+Second, we use the DISTINCT modifier when we want to calculate the result based on distinct values.
+Third, we need to specify the expression that involves columns and arithmetic operators.
+
+
+=================================================================
+ 
+=============================================================================
+Count() Function
+MySQL count() function returns the total number of values in the expression. 
+
+SELECT COUNT (expression)    
+FROM table_name    
+[WHERE conditions];
+
+================================================================================
+Example:
+Suppose we want to get the total number of employees in the employee table, we need to use the count() function 
+as shown in the following query:
+
+mysql> SELECT COUNT(name) FROM employee;     
+ COUNT( name) 
++--------------+
+|        6 |
+=================================================================
+person table
+We can use the count function in three forms, which are explained below:
+Count (*)
+Count (expression)
+Count (distinct) 
+
+
+1 )COUNT(*) Function: This function uses the SELECT statement to returns the count of rows in a result set.
+ The result set contains all Non-Null, Null, and duplicates rows.
+
+
+2)COUNT(expression) Function: This function returns the result set without containing Null rows as the result of 
+an expression.
+
+3)COUNT(distinct expression) Function: This function returns the count of distinct rows without containing NULL values as 
+the result of the expression.
+==========================================================================================
+
+Example1 
+
+Execute the following query that uses the COUNT(expression) function to calculates the total number of employees name available in the table:
+mysql> SELECT COUNT(emp_name) FROM employees;    
+
+
+Example2
+
+Execute the following statement that returns all rows from the employee table and WHERE clause specifies the rows
+ whose value in the column emp_age is greater than 32:
+mysql> SELECT COUNT(*) FROM employees WHERE emp_age>32;    
+
+Example3
+
+This statement uses the COUNT(distinct expression) function that counts the Non-Null and distinct rows in the column emp_age:
+mysql> SELECT COUNT(DISTINCT emp_age) FROM employees;  
+
+SELECT COUNT( last_name) FROM myemp WHERE salary>3000;
+SELECT COUNT(distinct last_name) FROM myemp WHERE salary>3000;
+
+===============================================================
+ex1 :SELECT  name, COUNT(*) FROM course
+    ->  GROUP BY name      HAVING COUNT(*)>=2     ORDER BY COUNT(*);
+ex 2:SELECT  name, COUNT(name) FROM course
+    ->  GROUP BY name      HAVING COUNT(*)>=2     ORDER BY COUNT(*);
+ex 3:SELECT  name, COUNT(distinct name) FROM course
+    ->  GROUP BY name      HAVING COUNT(distinct name)>=1     ORDER BY COUNT(*);
+
+==============================================================================
+ASSIGNMENT:
+
+Let’s take a look at the following example.
+
+First, create a new table contacts that has two columns id and name:
+CREATE TABLE contacts(
+   id INT AUTO_INCREMENT,   name VARCHAR(50),   PRIMARY KEY(id));
+
+Second, insert four rows into the contacts table:
+
+INSERT INTO contacts(name) VALUES ("John"), ("Jane"),(NULL), ("Jane");
+
+SELECT * FROM contacts;
+
+Output:
+
++----+------+
+| id | name |
++----+------+
+|  1 | John |
+|  2 | Jane |
+|  3 | NULL |
+|  4 | Jane |
++----+------+
+==============================================
+EX 1:SELECT COUNT(DISTINCT name) FROM contacts;
+
+Output:
+
++----------------------+
+| COUNT(DISTINCT name) |
++----------------------+
+|                    2 |
++----------------------+
+In this example, the COUNT DISTINCT function ignores the NULL value and only counts unique non-null values.
+
+EX 2: SELECT COUNT( name) FROM contacts WHERE NAME='JANE';
+EX 3: SELECT COUNT( DISTINCT name) FROM contacts WHERE NAME='JANE';
+EX 4:
+mysql> SELECT COUNT( name) FROM contacts;
+EX 5:
+mysql> SELECT COUNT(DISTINCT name) FROM contacts;
+================================================================================
+ 
+MySQL Count() Function with GROUP BY Clause
+
+We can also use the count() function with the GROUP BY clause that returns the count of the element in each group.
+ For example, the following statement returns the number of employee in each city:
+
+    mysql> SELECT  city, COUNT(*) FROM employees GROUP BY city;  
+
+===============================================================================
+MySQL Count() Function with HAVING and ORDER BY Clause
+
+Let us see another clause that uses ORDER BY and Having clause with the count() function. 
+Execute the following statement that gives the employee name who has at least two age same and sorts them based on the count result:
+
+    mysql> SELECT  emp_age, COUNT(*) FROM employees       GROUP BY emp_age      HAVING COUNT(*)>=2     ORDER BY COUNT(*);  
+
+================================================================================
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,160 @@
+
+Ex: There are 2 sets
+A={10,20,30} B={30,40,50}
+
+1)union: combine 2 sets values excluding duplicates
+AUB={10,20,30,40,50}
+
+2)union all: combine 2 sets values including duplicates
+A UL B={10,20,30,30,40,50};
+
+3)Intersect:return common value
+A I B={30};
+
+4)Minus:uncommon values from LHS and these values cannot be there in RHS set.
+A-B={10,20};
+B-A={40,50};
+
+==>Take tables instead of taking sets
+==========================================================================================
+What are SET Operators in MySQL?
+
+The SET Operators in MySQL are basically used to combine the result of more than 1 select statement and return the output as a single result set. 
+syntax:
+<select query1>  <set operator>  <select query2>;
+
+In SQL, 4 types of set operators are. They are as follows:
+
+    UNION: combined two table values without duplicates
+		==>It is used to combine two or more result sets into a single set, without duplicates.
+    UNION ALL: combined two table values with duplicates
+		==>It is used to combine two or more result sets into a single set, including duplicates.
+    INTERSECT: to return a common values.
+		==>It is used to combine two result sets and returns the data which are common in both the 			result set.
+    EXCEPT/MINUS: to return uncommon values from LHS select query
+		==>It is used to combine two result sets and returns the data from the first result set which is 			not present in the second result set.
+======================================================================
+Points to Remember while working with Set Operations:
+
+    ==>Every SELECT statement involved in the query must have a similar number of columns.
+    ==>The columns in the SELECT statement must be in the same order and have similar data types.
+    ==>In order to sort the result, an ORDER BY clause should be part of the last select statement. 
+ ============================================================================================================
+ Use the following EmployeeUK and EmployeeUSA tables to understand the SET Operators in MySQL.
+
+use mysql28 database
+CREATE TABLE EmployeeUK
+(
+  EmployeeId INT PRIMARY KEY,
+  FirstName VARCHAR(50),
+  LastName VARCHAR(50),
+  Gender VARCHAR(10),
+  Department VARCHAR(20)
+);
+INSERT INTO EmployeeUK VALUES(1, 'Pranaya', 'Rout', 'Male','IT');
+INSERT INTO EmployeeUK VALUES(2, 'Priyanka', 'Dewangan', 'Female','IT');
+INSERT INTO EmployeeUK VALUES(3, 'Preety', 'Tiwary', 'Female','HR');
+INSERT INTO EmployeeUK VALUES(4, 'Subrat', 'Sahoo', 'Male','HR');
+INSERT INTO EmployeeUK VALUES(5, 'Anurag', 'Mohanty', 'Male','IT');
+INSERT INTO EmployeeUK VALUES(6, 'Rajesh', 'Pradhan', 'Male','HR');
+INSERT INTO EmployeeUK VALUES(7, 'Hina', 'Sharma', 'Female','IT');
+
+
+CREATE TABLE EmployeeUSA
+(
+  EmployeeId INT PRIMARY KEY,
+  FirstName VARCHAR(50),
+  LastName VARCHAR(50),
+  Gender VARCHAR(10),
+  Department VARCHAR(20)
+);
+INSERT INTO EmployeeUSA VALUES(1, 'James', 'Pattrick', 'Male','IT');
+INSERT INTO EmployeeUSA VALUES(2, 'Priyanka', 'Dewangan', 'Female','IT');
+INSERT INTO EmployeeUSA VALUES(3, 'Sara', 'Taylor', 'Female','HR');
+INSERT INTO EmployeeUSA VALUES(4, 'Subrat', 'Sahoo', 'Male','HR');
+INSERT INTO EmployeeUSA VALUES(5, 'Sushanta', 'Jena', 'Male','HR');
+INSERT INTO EmployeeUSA VALUES(6, 'Mahesh', 'Sindhey', 'Female','HR');
+INSERT INTO EmployeeUSA VALUES(7, 'Hina', 'Sharma', 'Female','IT');
+
+UNION Operator in MySQL
+
+The UNION operator is used to combine the result set of two or more SELECT statements into a single result set by removing the duplicate records. That means the UNION Operator selects only the distinct values.
+
+Query1:query combines two select statements using the UNION operator
+SELECT FirstName, LastName, Gender, Department FROM EmployeeUK
+UNION
+SELECT FirstName, LastName, Gender, Department FROM EmployeeUSA;
+
+=============================================================================================
+UNION ALL Operator in MySQL
+
+The UNION ALL operator is used to combine the result set of two or more SELECT statements into a single result including the duplicate values.
+Query2:query combines two select statements using the UNION ALL operator
+
+SELECT FirstName, LastName, Gender, Department FROM EmployeeUK
+UNION ALL
+SELECT FirstName, LastName, Gender, Department FROM EmployeeUSA;
+
+==============================================================================================
+Differences between UNION and UNION ALL Operator in MySQL
+
+ UNION Operator removes duplicate rows whereas UNION ALL operator does not remove the duplicate rows. 
+When we use a UNION operator, in order to remove the duplicate rows from the result set, it has to do a distinct operation which is time-consuming. For this reason, UNION ALL is much faster than UNION Operator in MySQL.
+UNION has a default feature to eliminate the duplicate rows from the output. UNION ALL has no feature to eliminate the duplicate rows from the output.
+UNION performance is slow because it takes time to find and then remove duplicate records. UNION performance is fast because it does not eliminate the duplicate rows.
+==========================================================================================
+UNION/UNION ALL with ORDER BY Clause in MySQL
+
+The UNION/UNION ALL Operator can be used with the ORDER BY clause to sort the result returned from the query. Suppose we want to sort the employees by First Name column values. ORDER BY clause should be part of the last select statement. 
+
+SELECT FirstName, LastName, Gender, Department FROM EmployeeUK
+UNION all
+SELECT FirstName, LastName, Gender, Department FROM EmployeeUSA
+ORDER BY FirstName;
+
+===================================================================================
+MySQL EXCEPT Operator:
+
+The EXCEPT operator is used to combine two tables or two result sets and will return rows from the first select statement that are not present in the second select statement.
+SELECT FirstName, LastName, Gender, Department FROM EmployeeUK
+     except
+     SELECT FirstName, LastName, Gender, Department FROM EmployeeUSA;
+
+SELECT * FROM EmployeeUK
+WHERE FirstName NOT IN (SELECT FirstName FROM EmployeeUSA);
+====================================================================================
+INTERSECT Operator in MySQL
+
+The INTERSECT operator is used to combine two result sets and returns the data which are common in both the result set
+ SELECT FirstName, LastName, Gender, Department FROM EmployeeUSA
+    -> INTERSECT
+    -> SELECT FirstName, LastName, Gender, Department FROM EmployeeUK;
+
+SELECT * FROM EmployeeUK
+WHERE FirstName IN (SELECT FirstName FROM EmployeeUSA);
+====================================================================================================================
+Union vs. Join
+
+The Union and Join clause are different because a union always combines the result set vertically while the join appends the output horizontally.
+JOIN combines data from multiple different tables, whereas UNION combines data from multiple similar tables.
+JOIN appends the output horizontally, whereas UNION combines the result set vertically.
+==========================================================================================================
+Assignments
+1)WAQ TO DISPLAY ALL EMPLOYEES DETAILS WHO ARE WORKING IN IT ORGANIZATION?
+2)WAQ TO DISPLAY EMPLOYEES WHO ARE WORKING IN BANGLORE BUT NOT IN MUMBAI BRANCH?
+3)WAQ TO DISPLAY EMPLOYEES WHO ARE WORKING IN BOTH BRANCHES?
+
+=====================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+

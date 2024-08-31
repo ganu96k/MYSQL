@@ -1,0 +1,81 @@
+grouping records:
+-----------------
+MySQL GROUP BY Clause
+1 The MYSQL GROUP BY Clause is used to collect data from multiple records and group the result by one or more column. It is generally used in a SELECT statement.
+
+2 The GROUP BY Statement in SQL is used to arrange identical data into groups with the help of some functions. i.e. if a particular column has the same values in different rows then it will arrange these rows in a group. 
+
+3 You can also use some aggregate functions like COUNT, SUM, MIN, MAX, AVG etc. on the grouped column.It returns one row for each group and reduces the number of rows in the result set.
+
+4 The GROUP BY clause is often used with aggregate functions (MAX, SUM, AVG) to group the results by one or more columns or In simple words we can say that The GROUP BY clause is used in collaboration with the SELECT statement to arrange required data into groups. 
+syntax:
+        select <colName>
+        from <tableName>
+        group by <colName>;
+
+5)select statement and group statement must have same <colname>
+
+===========================================================================
+Example 1: 
+SELECT COUNT(salary), salary 
+FROM myemp
+ GROUP BY dep_id  having dep_id>=40
+ ORDER BY dep_id;
+
+Example2:
+---------
+mysql> select min(salary),max(salary),avg(salary),sum(salary),count(salary) from myemp;
+
+Example3:
+---------
+mysql> select dep_id,sum(salary) as Total_Salary from myemp
+    -> group by dep_id;
+
+Example4:
+---------
+mysql> select dep_id,sum(salary) as Total_Salary from myemp
+    -> group by dep_id
+    -> order by dep_id asc;
+
+Example5:
+---------
+mysql> select dep_id,sum(salary) as Total_Salary from myemp group by dep_id having dep_id=50;
+
+Example6:
+---------
+mysql> select dep_id,sum(salary) as Total_Salary from myemp
+    -> group by dep_id
+    -> having dep_id in (20,40,60,80,100);
+
+mysql> select dep_id,sum(salary) as Total_Salary from myemp
+    -> group by dep_id
+    -> having dep_id in (20,40,60,80,100)
+    -> order by dep_id asc;
+
+mysql> select dep_id,sum(salary) as Total_Salary from myemp
+    -> group by dep_id
+    -> having dep_id in (20,40,60,80,100)
+    -> order by dep_id desc;
+
+
+Example7:
+---------
+mysql> select dep_id,max(salary),min(salary) from myemp
+    -> group by dep_id;
+
+
+Example8:
+---------
+mysql> select mgr_id,count(mgr_id) from myemp group by mgr_id;
+
+
+
+
+
+
+
+
+
+
+
+

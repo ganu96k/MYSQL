@@ -1,0 +1,362 @@
+
+
+`
+Transaction Control Language in MySQL
+
+---------------------
+What is a Transaction?
+
+==>group of activities is called transactions
+==> set of commands / SQL statements is called transactions in mysql
+
+==>The transaction allows us to group a set of related tasks as one logical unit and all of these sets of related tasks are either get committed or get rollback if there is an error. In technical words, we can say that a transaction in MySQL is a set of SQL statements (mostly DML Statements) that should be executed as one unit.
+
+==>So, a transaction ensures that either all of the command succeeds or none of the commands succeeds. If one of the commands in the transaction fails, then all of the commands fail and any data that is modified in the database is rolled back. If all the commands executed successfully, then the modification made to the database are committed.
+======================================================
+Why we need Transaction Management in MySQL?
+
+When we use the DML statement as soon as we execute the SQL statement the changes are made to the database and it is difficult to verify or roll back the changes made by DDL statements.
+
+AccNumber       Name        Balance
+-----------------------------------
+111             Prakash     50000/-
+222             Kalyan      20000/-
+
+Task: Prakash wants to transfer the funds from 'Prakash' account to 'Kalyan' account and the amount 5000/-
+
+AccNumber       Name        Balance
+-----------------------------------
+111             Prakash     45000/-
+222             Kalyan      25000/-
+
+for these operations we have to perform 2 queries. 
+Q1: update account set balance = balance - 5000/- where accNumber=111;
+Q2: update account set balance = balance + 5000/- where accNumber=222;
+
+==>In this case, we need to perform at least two updates. The first update is happening in the sender’s account from where the money is sending and the other update is happening in the receiver’s account who is receiving the money. Both of these updates should either get committed or get rollback if there is an error. We don’t want the transaction to be in a half-committed state
+==> In this example, though all the queries interrelated they work separately and in case of failure of any of the queries, it makes it difficult to keep track of data or revert the changes. In such a case, we need to use transaction.
+==>we have to execute all queries or we have to ignore all queries for that combine both the queries in 1 transaction.
+==>A transaction is a logical group of one or more SQL statements. We can go interrelated SQL query in a single transaction and if any one of the queries fails, we can revert back the changes and if all the queries are successful, we can make the transaction complete
+=====================================================
+What is Transaction Management in MySQL?
+
+The process of combining sets of inter-related Operations into a single unit and executing those operations by applying the do
+ everything or do-nothing principle is called transaction management in MySQL.
+==========================================================
+How to implement Transaction Management in MySQL?
+
+First, we need to begin the transactions. Then we need to write the SQL Statement which we want to execute as a single unit. 
+In the third step, we need to check for errors. If there is any error i.e. any of the SQL statements fails, then roll back
+ the transaction (any data that is modified in the database will be rollback) else commit the transaction so that the data is saved permanently to the database.
+
+START TRANSACTION: It indicates that the transaction is started.
+commit -------> save the data into table
+rollback -----> undo operation......It will roll back the data to its previous state.
+The commit statement completes the transaction and saves the changes in the database permanently. 
+Once we execute the commit statement, we cannot revert back the changes. The commit statements can be executed after the transaction statement.
+savepoint ----> marks on transaction(delete upto that transactions)
+This is used for dividing or breaking a transaction into multiple units so that the user has a chance of roll backing a transaction up to a point or location. 
+IT creates points within the groups of transactions in which to ROLLBACK.
+
+Note:Note: The Transactional Control Language commands are only used with the DML statements such as INSERT, UPDATE, and DELETE. 
+The TCL Commands cannot be used while creating tables or dropping (basically DDL operations) them because these operations are automatically
+ committed to the database.
+
+===============================================================
+==>first data will store inside buffer,later it will be pushed into database.
+whenever commit is applied,from buffer it will pushed the data into db
+whenever rollback is applied,it will rollback data from buffer itself
+
+CREATE TABLE Product
+(
+ ProductId INT PRIMARY KEY, 
+ ProductName VARCHAR(40), 
+ Price INT,
+ Quantity INT
+ );
+
+ INSERT INTO Product VALUES(1001, 'Product-1', 1000, 100);
+ INSERT INTO Product VALUES(1002, 'Product-2', 2000, 150);
+ INSERT INTO Product VALUES(1003, 'Product-3', 3000, 200);
+ INSERT INTO Product VALUES(1004, 'Product-4', 4000, 250);
+
+START TRANSACTION;
+INSERT INTO Product VALUES(1005, 'Product-5', 5000, 300);
+UPDATE Product SET Price =3500 WHERE ProductID = 1003;
+
+Note: The point here is that only after executing the commit statement the transaction is complete and the changes were saved in the database permanently.
+
+Note:
+When you execute the above transaction and as you can see the transaction is not committed, but if you verify the table, then you will see the above changes
+ in the database as shown in the below image. But these changes are not in a permanent state.
+
+What is the need for the ROLLBACK command?
+As you have not executed the COMMIT statement, then you have a chance to roll back all the DML operations on the table by using the Rollback command as follows.
+ROLLBACK;
+Once you execute the ROLLBACK statement, then verify the Product table and you will see the data in its previous state 
+
+
+
+
+
+
+
+mysql> create table student
+    -> (id int,name varchar(20),course varchar(20));
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> insert into student values(1,'Sunny','Python');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> commit;
+Query OK, 0 rows affected (0.00 sec)
+
+
+mysql> select * from student;
++------+-------+--------+
+| id   | name  | course |
++------+-------+--------+
+|    1 | Sunny | Python |
++------+-------+--------+
+1 row in set (0.00 sec)
+
+mysql> insert into student values(2,'Bunny','Java');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from student;
++------+-------+--------+
+| id   | name  | course |
++------+-------+--------+
+|    1 | Sunny | Python |
+|    2 | Bunny | Java   |
++------+-------+--------+
+2 rows in set (0.00 sec)
+
+Note: By default auto commit is always actiated in MYSQL.
+//by default insert,update,delete operation automatically does auto commit.
+
+Note: If we want we can disable auto commit by using the following statement
+
+mysql> set autocommit=0;
+
+1----> ON
+0----> OFF
+
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into student values(3,'Chinny','mysql');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from student;
++------+--------+--------+
+| id   | name   | course |
++------+--------+--------+
+|    1 | Sunny  | Python |
+|    2 | Bunny  | Java   |
+|    3 | Chinny | mysql  |
++------+--------+--------+
+3 rows in set (0.00 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> select * from student;
++------+-------+--------+
+| id   | name  | course |
++------+-------+--------+
+|    1 | Sunny | Python |
+|    2 | Bunny | Java   |
++------+-------+--------+
+2 rows in set (0.00 sec)
+
+mysql> set autocommit=1;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into student values(4,'Pinny','DSA');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from student;
++------+-------+--------+
+| id   | name  | course |
++------+-------+--------+
+|    1 | Sunny | Python |
+|    2 | Bunny | Java   |
+|    4 | Pinny | DSA    |
++------+-------+--------+
+3 rows in set (0.00 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from student;
++------+-------+--------+
+| id   | name  | course |
++------+-------+--------+
+|    1 | Sunny | Python |
+|    2 | Bunny | Java   |
+|    4 | Pinny | DSA    |
++------+-------+--------+
+3 rows in set (0.00 sec)
+==============================================
+What is SAVEPOINT in MySQL?
+
+The SAVEPOINT in MySQL is used for dividing (or) breaking a transaction into multiple units so that the user has a chance of
+ roll backing the transaction up to a specified point. That means using Save Point we can roll back a part of a transaction instead of the entire transaction.
+==========================================
+How to create SAVEPOINT in MySQL?
+
+==>The SAVEPOINT statement in MySQL is used to save a transaction temporarily. We can save multiple SAVEPOINT in a single transaction.
+ We can ROLLBACK the transaction to a given SAVEPOINT and the transaction after that SAVEPOINT are revert back to its previous state.
+ We cannot ROLLBACK to a SAVEPOINT after the COMMIT statement.
+
+==>In order to create a save point or you can say logical point, we need to use the SAVEPOINT command followed by the save
+ point name i.e. SAVEPOINT SAVEPOINT_NAME and ROLLBACK to the SAVEPOINT are ROLLBACK TO SAVEPOINT_NAME.
+==>As per the definition, it will roll back the statements which are present after the SAVEPOINT and before the Rollback Statement.
+=========================================================
+CASE1:
+ROLLBACK TO SavePoint1;
+When we execute the above Rollback command, it will roll back the statements which are starting from SavePoint1, and before the rollback statement. 
+That means in our example, it will roll back all the 6 Insert statements.
+
+CASE2:
+ROLLBACK TO SavePoint2;
+When we execute the above Rollback statement, then it will roll back the statements which are starting from SavePoint2 and before the Rollback statement. 
+That means, in this case, it will roll back 4 Insert statements.
+
+CASE3:
+ROLLBACK TO SavePoint3;
+When we execute the above Rollback statement, it will roll back the statements which are present after the SavePoint3 and before the Rollback Command. 
+That means in this case, it will roll back two insert statements.
+=============================================================================
+START TRANSACTION; 
+    SAVEPOINT SavePoint1;
+        INSERT INTO Product VALUES(111, 'Product-5', 5000, 500);
+     INSERT INTO Product VALUES(112, 'Product-6', 6000, 600);
+        
+    SAVEPOINT SavePoint2;
+        INSERT INTO Product VALUES(113, 'Product-7', 7000, 700);
+      INSERT INTO Product VALUES(114, 'Product-8', 8000, 800);
+        
+    SAVEPOINT SavePoint3;
+        INSERT INTO Product VALUES(115, 'Product-9', 9000, 900);
+      INSERT INTO Product VALUES(116, 'Product-10', 10000, 1000);
+
+ROLLBACK TO SavePoint2;
+COMMIT;
+
+=================================================================
+
+
+
+whenever we are using transaction,by default auto commit will set to false.
+mysql> create table sample(id int,name char(3));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> select * from sample;
+Empty set (0.00 sec)
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+
+mysql> insert into sample values(1,'AAA');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into sample values(2,'BBB');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> savepoint sb;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into sample values(3,'CCC');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into sample values(4,'DDD');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> savepoint sd;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from sample;
++------+------+
+| id   | name |
++------+------+
+|    1 | AAA  |
+|    2 | BBB  |
+|    3 | CCC  |
+|    4 | DDD  |
++------+------+
+4 rows in set (0.00 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> select * from sample;
+Empty set (0.00 sec)
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into sample values(1,'AAA');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into sample values(2,'BBB');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> savepoint sb;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into sample values(3,'CCC');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into sample values(4,'DDD');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> savepoint sd;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into sample values(5,'EEE');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into sample values(6,'FFF');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from sample;
++------+------+
+| id   | name |
++------+------+
+|    1 | AAA  |
+|    2 | BBB  |
+|    3 | CCC  |
+|    4 | DDD  |
+|    5 | EEE  |
+|    6 | FFF  |
++------+------+
+6 rows in set (0.00 sec)
+
+mysql> rollback to sd;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from sample;
++------+------+
+| id   | name |
++------+------+
+|    1 | AAA  |
+|    2 | BBB  |
+|    3 | CCC  |
+|    4 | DDD  |
++------+------+
+4 rows in set (0.00 sec)
+
+mysql> rollback to sb;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from sample;
++------+------+
+| id   | name |
++------+------+
+|    1 | AAA  |
+|    2 | BBB  |
++------+------+
+2 rows in set (0.00 sec)

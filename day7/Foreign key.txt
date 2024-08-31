@@ -1,0 +1,220 @@
+Foreign Key
+
+What is a Foreign Key Constraint in MySQL?
+
+Creating the relationship between the database tables is one of the most important concepts in a database.
+
+
+ The relationship between multiple tables provides a mechanism for linking the data stores in multiple tables and
+ retrieving them in an efficient manner.
+
+In order to create a link between two tables, we must specify a Foreign Key in one table that references a column in 
+another table. That means the Foreign Key constraint in MySQL is used for binding two tables with each other and then 
+verify the existence of one table data in other tables.
+
+Note: A foreign key in one TABLE points to either a primary key or a unique key in another table in MySQL. The foreign key 
+constraints are basically used to enforce referential integrity. In our upcoming articles, we will discuss referential 
+integrity constraints in detail.
+How to Create Foreign Key Constraint in MySQL?
+
+To Create a Foreign Key Constraint in MySQL, we require the following things
+
+
+    1)We require two tables for linking with each other and those two tables must have a common column for binding the
+    tables.
+    2) The common column that is present in both the tables need not have the same name but their data type must be the same.
+    3)The common column that is present under the parent table or master table is known as the reference key column and 
+    moreover, the reference key column should not contain any duplicate values. So, we need to impose either UNIQUE or PRIMARY 
+    key constraint on that column.
+   4) The common column which is present in the child or detailed table is known as the Foreign key column and we need to 
+impose a Foreign key constraint on the column which refers to the reference key column of the master table.
+
+Examples to understand FOREIGN KEY Constraints in MySQL.
+
+Let us understand how to create the primary key and foreign key relationship between two tables in MySQL. 
+
+mysql> CREATE TABLE Department
+     (
+         Id   INT PRIMARY KEY,
+        Name VARCHAR(50),
+        Location  VARCHAR(50)
+     );
+Query OK, 0 rows affected (0.02 sec)
+INSERT INTO Department (Id, Name, Location) VALUES (10, 'IT', 'Hyderabad');
+
+ INSERT INTO Department (Id, Name, Location) VALUES (20, 'HR', 'Delhi');
+INSERT INTO Department (Id, Name, Location) VALUES (30, 'Finance', 'Mumbai');
+============================================================================
+mysql> CREATE TABLE Employee
+     (
+         ID    INT PRIMARY KEY,
+         Name  VARCHAR(30),
+         Salary INT,
+         DepartmentId    INT,
+         FOREIGN KEY (DepartmentId) REFERENCES Department(Id)
+     );
+Query OK, 0 rows affected (0.02 sec)
+
+
+ INSERT into Employee VALUES (101, 'Anurag', 25000, 10);
+
+
+ INSERT into Employee VALUES (102, 'Pranaya', 32000, 20);
+
+
+ INSERT into Employee VALUES (103, 'Hina', 35000, 30);
+======================================================================
+FAQ 1:
+INSERT into Employee VALUES (104, ‘Sambit’, 52000, 40);
+
+When you try to execute the above INSERT SQL Statement, you will get the following error . It clearly says that you cannot add or update a child row if the foreign key value does not exist in the parent table. In this case, the foreign key value i.e. 40 that we want to insert in the employee table does not exist in the Department table and hence we got the ERROR
+
+FAQ 2:DUPLICATES ARE ALLOWED FOR FOREIGN KEY IN THE CHILD TABLE 
+ INSERT into Employee VALUES (104, 'Hina', 35000, 30);
+
+FAQ 3:NULL ARE ALLOWED FOR FOREIGN KEY IN THE CHILD TABLE 
+ INSERT into Employee VALUES (105, 'Anurag', 25000,NULL);
+
+mysql> SELECT * FROM EMPLOYEE;
++-----+---------+--------+--------------+
+| ID  | Name    | Salary | DepartmentId |
++-----+---------+--------+--------------+
+| 101 | Anurag  |  25000 |           10 |
+| 102 | Pranaya |  32000 |           20 |
+| 103 | Hina    |  35000 |           30 |
+| 104 | Hina    |  35000 |           30 |
+| 105 | Anurag  |  25000 |         NULL |
++-----+---------+--------+--------------+
+========================================================================
+Rules to Follow while working with Foreign Key in MySQL:
+
+When we impose Foreign Key constraint and establish the relation between tables in MySQL, the following 3 rules come into the picture
+Rule1: We cannot insert a value into the foreign key column if that value is not existing in the reference key column of the parent (master) table.
+Example: INSERT into Employee VALUES (104, ‘Sambit’, 52000, 40);
+When we try to execute the above INSERT Statement, you will get the following error.
+Error Code: 1452. Cannot add or update a child row: a foreign key constraint fails (`employeedb`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`DepartmentId`) REFERENCES `department` (`Id`))
+
+Rule2: We cannot update the reference key value of a parent table if that the value has a corresponding child record in the child table without addressing what to do with the child records.
+Example: UPDATE Department SET Id = 100 WHERE Id = 10;
+As we have a child record with department id 10 in the Employee table, so, trying to update the same in the Department table will give you the following error.
+Error Code: 1451. Cannot delete or update a parent row: a foreign key constraint fails (`employeedb`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`DepartmentId`) REFERENCES `department` (`Id`))
+
+Rule3: We cannot delete a record from the parent table provided that the records reference key value has a child record in the child table without addressing what to do with the child record.
+Example: DELETE FROM Department WHERE Id = 10;
+As we have a child record with department id 10 in the Employee table, so, trying to delete the same in the Department table will give you the following error.
+Error Code: 1451. Cannot delete or update a parent row: a foreign key constraint fails (`employeedb`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`DepartmentId`) REFERENCES `department` (`Id`))
+
+================================================================================
+//ON UPDATE CASCADE ON DELETE CASCADE
+
+mysql> CREATE TABLE Department
+    -> (
+    ->     Id   INT PRIMARY KEY,
+    ->     Name VARCHAR(50),
+    ->     Location  VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> INSERT INTO Department (Id, Name, Location) VALUES (10, 'IT', 'Hyderabad');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO Department (Id, Name, Location) VALUES (20, 'HR', 'Delhi');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO Department (Id, Name, Location) VALUES (30, 'Finance', 'Mumbai');
+Query OK, 1 row affected (0.00 sec)
+
+
+ CREATE TABLE Employee1
+    (
+         ID    INT PRIMARY KEY,
+         Name  VARCHAR(30),
+         Salary INT,
+         DepartmentId    INT,
+        CONSTRAINT FK_DEPARTMENT FOREIGN KEY(DepartmentId) REFERENCES Department(Id)
+     ON DELETE CASCADE
+     ON UPDATE CASCADE);
+
+
+mysql> INSERT into Employee1 VALUES (101, 'Anurag', 25000, 10);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT into Employee1 VALUES (102, 'Pranaya', 32000, 20);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT into Employee1 VALUES (103, 'Hina', 35000, 30);
+Query OK, 1 row affected (0.00 sec)
+ 
+INSERT into Employee1 VALUES (104, 'Hina', 35000, 40);
+
+FAQ 3:NULL ARE ALLOWED FOR FOREIGN KEY IN THE CHILD TABLE 
+ INSERT into Employee1 VALUES (105, 'Anurag', 25000,NULL);
+
+
+
+FAQ:
+// INSERT into Employee1 VALUES (104, ‘Sambit’, 52000, 40); 
+NOT ALLOWED:Cannot add or update a child row: a foreign key constraint fails
+
+//UPDATE Department SET Id = 200 WHERE Id = 10;
+ALLOWED
+
+//DELETE FROM Department WHERE Id = 10;
+ALLOWED
+
+=================================================================================
+
+How to add Foreign Key Constraints to Existing Table?
+
+//To understand this, let us first, create a table without Foreign Key by executing the below SQL Statement.
+ CREATE TABLE Employee
+    (
+         ID    INT PRIMARY KEY,
+         Name  VARCHAR(30),
+         Salary INT,
+         DepartmentId    INT);
+
+Now, once the table is created, we want to add a Foreign Key on the DepartmentId column which should refer to the Id column of the Department table. You can do the same by using the ALTER TABLE statement as shown in the below example.
+
+ALTER TABLE Employee ADD FOREIGN KEY (DepartmentId) REFERENCES Department(Id);
+//DESC EMPLOYEE
+=============================================================
+ALTER TABLE Employee1 ADD FOREIGN KEY (DepartmentId) REFERENCES Department(Id);
+How to Delete a Foreign Key Constraints in MySQL?
+
+MySQL allows the ALTER TABLE statement to remove an existing foreign key from the table. The following syntax is used to drop a foreign key in MySQL.
+
+ALTER TABLE table_name DROP FOREIGN KEY fk_constraint_name;
+
+Here, the table_name is the name of a table from where we are going to remove the foreign key. The constraint_name is the name of the foreign key that was added during the creation or alteration of a table. If you don’t know the name of an existing foreign key, then execute the following command.
+
+SHOW CREATE TABLE Employee;
+=====================================================================================================================
+Now, to delete this foreign key constraint from the Employee1 table, execute the following statement.
+ ALTER TABLE EMPLOYEE DROP FOREIGN KEY employee_ibfk_1;
+
+======================================================================================================================
+What is the difference between Primary Key and Foreign Key Constraint in MySQL?
+Primary Key in MySQL:
+==>The Primary Key Constraint in MySQL is uniquely identifying a record in a table.
+ ==>Primary Key constraint neither accepts null values nor duplicate values on the column on which it is applied.
+==>We can create only one Primary Key on a table in MySQL
+
+Foreign Key in MySQL:
+
+ ==>The Foreign Key in MySQL is a field in a table that is a unique key (either primary or unique key) in another table.
+ ==> A Foreign Key can accept both null values and duplicate values.
+  ==> We can create more than one Foreign key on a table in MySQL.
+=======================================================================================================================
+QUES :Is it possible that a foreign key references a non-primary key in MySQL?
+
+Yes, it is possible. The point that you need to keep in mind is that a foreign key actually references a key that should contain unique values. So, it may be a primary key or a unique key as both keys maintain the uniqueness of the column of a table.
+
+
+QUES:Can a foreign key accept null values in MySQL?
+
+Yes, a foreign key in MySQL can accept NULL values. This is because a Foreign key can reference unique or non-primary keys which may hold NULL values.
+=======================================================================================================================
+
+
+

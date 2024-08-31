@@ -1,0 +1,187 @@
+Indexes:
+
+==>It is a database object which is used to retrieval a specific row from a table fastly.
+==>Database index object will work just like a book index page in text books.By using book index page we can access a specific topic from a text book fastly same as by database index object we can access a specific row from table fastly.
+==>By using indexes we can reduce searching time and improve the performance of the database.
+==>on which column we created an index object that column is called as "indexed key column" and this indexed key column only use under "where" clause condition then only indexex are working otherwise indexes are not working on table.
+==>An index is a data structure that allows us to add indexes in the existing table. It enables you to improve the faster retrieval of records on a database table. It creates an entry for each value of the indexed columns. We use it to quickly find the record without searching each row in a database table whenever the table is accessed. We can create an index by using one or more columns of the table for efficient access to the records.
+==>Indexing in MySQL is a process that helps us to return the requested data from the table very fast. If the table does not have an index, it scans the whole table for the requested data.
+
+==>Mysql supporting the following two types of searching mechanism those are,
+1)Table scan
+2)Index scan
+
+1.Table scan:
+In this method,mysql server is searching the entire table for required data.
+ex:select * from emp where sal=17000;
+Assume, the contactbooks table contains millions of rows, then, without an index,
+ the data retrieval takes a lot of time to find the result.
+ In that case, the database indexing plays an important role in returning the desired result and improves the overall performance of the query.
+
+2)index scan
+in this mysql server is scanning based on an indexed columnwise for required data.
+db index objects are created in 2 ways
+1)automatically (implicit index)
+2)manually(exlicit indexes)
+
+1)automatically (implicit index)
+when we created a table with primary key/unique constraint internally system is created a db index object on that column automatically.
+==>When a table is created with a primary key or unique key, it automatically creates a special index named PRIMARY. We called this index as a clustered index. 
+
+2)Manually:
+When we created an index object on particular column of a table then we called as "explicit indexes"
+user can create two types of indexes are
+1)B-TREE INDEX
+2)BITMAP INDEX
+ ================================================================================
+If we want to add index in table, we will use the CREATE INDEX statement as follows:
+
+    mysql> CREATE INDEX [index_name] ON [table_name] (column names)  
+
+In this statement, index_name is the name of the index, table_name is the name of the table to which the index belongs, and the column_names is the list of columns.
+
+==>By default, MySQL allowed index type BTREE if we have not specified the type of index.
+SN 			Storage Engine 					Index Type
+1. 			InnoDB 							BTREE
+2. 			Memory/Heap 					HASH, BTREE
+3. 			MYISAM 						BTREE
+
+ CREATE INDEX IND1 ON SAMPLE1(ID);
+
+mysql> EXPLAIN SELECT * FROM SAMPLE1 WHERE ID=1;
++----+-------------+---------+------------+------+---------------+------+---------+-------+------+----------+-------+
+| id | select_type | table   | partitions | type | possible_keys | key  | key_len | ref   | rows | filtered | Extra |
++----+-------------+---------+------------+------+---------------+------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | SAMPLE1 | NULL       | ref  | IND1          | IND1 | 4       | const |    2 |   100.00 | NULL  |
++----+-------------+---------+------------+------+---------------+------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> EXPLAIN SELECT * FROM SAMPLE1 WHERE ID=3;
++----+-------------+---------+------------+------+---------------+------+---------+-------+------+----------+-------+
+| id | select_type | table   | partitions | type | possible_keys | key  | key_len | ref   | rows | filtered | Extra |
++----+-------------+---------+------------+------+---------------+------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | SAMPLE1 | NULL       | ref  | IND1          | IND1 | 4       | const |    1 |   100.00 | NULL  |
++----+-------------+---------+------------+------+---------------+------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> EXPLAIN SELECT * FROM SAMPLE1 WHERE NAME='AAA';
++----+-------------+---------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table   | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+---------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | SAMPLE1 | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    4 |    25.00 | Using where |
++----+-------------+---------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)
+
+f you want to show the indexes of a table, execute the following statement:
+
+    mysql> SHOW INDEXES FROM student;  
+=================================================================================
+MySQL Drop Index
+MySQL allows a DROP INDEX statement to remove the existing index from the table. To delete an index from a table, we can use the following query:
+
+    mysql>DROP INDEX index_name ON table_name
+
+
+ DROP INDEX IND1 ON SAMPLE1;
+
+Again, execute the SHOW INDEXES statement to verify the index is removed or not.
+
+=========================================================================================
+If we want to get the index information of a table in a different database or database to which you are not connected, MySQL allows us to specify the database name with the Show Indexes statement. 
+    mysql> SHOW INDEXES FROM table_name IN database_name;  
+
+
+Note: It is noted that Index and Keys both are synonyms of Indexes, and IN is the synonyms of FROM keyword. Therefore, we can also write the Show Indexes statement with these synonyms as below:
+
+    mysql> SHOW INDEXES IN table_name FROM database_name;  
+
+OR,
+
+    mysql> SHOW KEYS FROM table_name IN database_name;  
+
+
+Table: It contains the name of the table.
+Non_unique: It returns 1 if the index contains duplicates. Otherwise, it returns 0.
+Key_name: It is the name of an index. If the table contains a primary key, the index name is always PRIMARY.
+Collation: It gives information about how the column is sorted in the index. It contains values where A represents ascending, D represents descending, and Null represents not sorted.
+Cardinality: It gives an estimated number of unique values in the index table where the higher cardinality represents a greater chance of using indexes by MySQL.
+NULL: It contains blank if the column does not have NULL value; otherwise, it returns YES.
+Index_type: It contains the name of the index method like BTREE, HASH, RTREE, FULLTEXT, etc
+
+======================================================================================
+UNIQUE INDEX:
+
+==>when we created an index object based on unique constraint to restrict duplicate values so that it
+reduce  searching time.
+==>MySQL allows another constraint called the UNIQUE INDEX to enforce the uniqueness of values in one or more columns. We can create more than one UNIQUE index in a single table, which is not possible with the primary key constraint.
+
+use mysql21
+    CREATE TABLE Employee_Detail(    
+        ID int AUTO_INCREMENT PRIMARY KEY,     
+        Name varchar(45),     
+        Email varchar(45),    
+        Phone varchar(15),     
+        City varchar(25),  
+        UNIQUE KEY unique_email (Email)  
+    );  
+
+    INSERT INTO Employee_Detail(ID, Name, Email, Phone, City)    
+    VALUES (1, 'Peter', 'peter@javatpoint.com', '49562959223', 'Texas'),    
+    (2, 'Suzi', 'suzi@javatpoint.com', '70679834522', 'California'),    
+    (3, 'Joseph', 'joseph@javatpoint.com', '09896765374', 'Alaska');  
+
+mysql>     SHOW INDEXES FROM Employee_Detail;
++-----------------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table           | Non_unique | Key_name     | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-----------------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| employee_detail |          0 | PRIMARY      |            1 | ID          | A         |           3 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| employee_detail |          0 | unique_email |            1 | Email       | A         |           3 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++-----------------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+Suppose we want the Name and Phone of the Employee_Detail table is also unique. In this case, we will use the below statement to create a UNIQUE index for those columns:
+
+    CREATE UNIQUE INDEX index_name_phone  
+    ON Employee_Detail (Name, Phone);  
+
+ create unique index id1 on employee_detail(name,phone);
+
+//Adding this record into the table produces an error. It is because of the combination of a name and phone already exists.
+
+INSERT INTO Employee_Detail(ID, Name, Email, Phone, City)   
+VALUES (4, 'Joseph', 'joseph@javatpoint.com', '09896765374', 'Texas');    
+
+
+note:
+
+    If we are creating unique index on only a single column, all the rows in that column must be unique.
+    We cannot create a unique index where NULL values are present in multiple rows in a single column.
+    If we are creating unique index on multiple columns, the combination of rows in those columns must be unique.
+    We cannot create a unique index on multiple columns if the combination of columns contains NULL values in more than one row.
+
+
+===============================================================================
+types of indexes
+Simple Index
+
+A simple index is a basic type of index where the values inserted into the column, containing this index, are searched easily. In such case, the column can contain duplicate values or NULL.
+
+Unique Index
+A Unique index does not allow any duplicate values to be inserted into a table column (where the index is defined on).It can be added to single or multiple columns of a table. If it is added to a single column, the values of that column must be unique. But if it is added to multiple columns, the combination of values in these columns must be unique.
+Primary Key Index
+
+Primary Key Index is an extension of unique index, as the primary key column must always contain unique values and these values must not be NULL. Primary key can be set to a single column of a database table, or multiple columns as well (which is not recommended).
+========================================================
+Add INDEX to the existing table using alter command
+ ALTER TABLE sample2 ADD INDEX IND2 (id);
+=======================================================================================
+clustered index
+
+==>MySQL database does not have separate provisions for Clustered indexes. They are automatically created when PRIMARY KEY is defined on a table. And when the PRIMARY KEY is not defined, the first UNIQUE NOT NULL key is treated as a Clustered index.
+
+If a table has no Primary Key or UNIQUE index, MySQL will internally create a hidden clustered index named GEN_CLUST_INDEX on a column that contains the row ID values.
+
+A clustered index can sort the data in a table manually. When data is inserted into the column with clustered index, the records are automatically sorted in a specified order. So, each table can only have one clustered index since it determines the sort order of the data.
+
+
+non cluster index
+non-clustered index stores data in one location and indexes containing pointers to this data in another location.
+A PRIMARY KEY is treated as a clustered index. And when the PRIMARY KEY is not defined, the first UNIQUE NOT NULL key is a clustered index. All the other indexes on a table are non-clustered indexes.

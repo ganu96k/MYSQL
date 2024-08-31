@@ -1,0 +1,800 @@
+
+
+Function:
+---------
+==>Function is self contained block of statements, which can be called any number of times
+==>main advantage of functions is code reusbility
+
+NOTE:
+1)The function parameter  contain only the IN parameter .
+2)The stored function can return only a single value defined in the function header.
+3)The stored function may also be called within SQL statements i.e  functions can be embedded in SELECT statements.
+Procedures cannot be used in SELECT statements 
+4)procedure does not return any values.
+5)Functions can be called from procedures, but procedures cannot be called from functions. 
+
+
+There are two types of functions are existed...
+
+1. predefined functions
+2. userdefined functions
+
+
+CREATE FUNCTION <functionName>(<parameters>) RETURNS <type>
+BEGIN
+    ------------
+    ------------
+    -RETURN -----------
+END
+
+mysql>select <functionName>();
+//It contains the list of parameters used by the function body. It does not allow to specify IN, OUT, INOUT parameters.
+
+mysql> set GLOBAL log_bin_trust_function_creators = 1;
+Query OK, 0 rows affected, 1 warning (0.01 sec)
+
+
+Example:
+--------
+
+CREATE  FUNCTION fun10() RETURNS text 
+BEGIN
+    declare msg text;
+    select 'Good Evening' into msg;
+RETURN msg;
+END ##
+
+select fun10();
++--------------+
+| fun1()       |
++--------------+
+| Good Evening |
++--------------+
+1 row in set (0.00 sec)
+
+
+
+Example2:
+---------
+CREATE FUNCTION fun2(x int) RETURNS int
+BEGIN
+RETURN x;
+END
+
+mysql> select fun2(111);
++-----------+
+| fun2(111) |
++-----------+
+|       111 |
++-----------+
+1 row in set (0.00 sec)
+
+mysql> select fun2(420);
++-----------+
+| fun2(420) |
++-----------+
+|       420 |
++-----------+
+1 row in set (0.00 sec)
+
+Example3:
+---------
+CREATE FUNCTION fun3(n int) RETURNS integer
+BEGIN
+RETURN n*n;
+END
+
+mysql> select fun3(4);
++---------+
+| fun3(4) |
++---------+
+|      16 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> select fun3(999);
++-----------+
+| fun3(999) |
++-----------+
+|    998001 |
++-----------+
+1 row in set (0.00 sec)
+
+Example:
+--------
+CREATE  FUNCTION maxOfTwo(n1 int,n2 int) RETURNS int
+BEGIN
+        if n1>n2 then
+            return n1;
+        else    
+            return n2;
+        end if;
+END
+
+mysql> select maxOfTwo(10,20);
++-----------------+
+| maxOfTwo(10,20) |
++-----------------+
+|              20 |
++-----------------+
+1 row in set (0.00 sec)
+
+mysql> select maxOfTwo(10,-20);
++------------------+
+| maxOfTwo(10,-20) |
++------------------+
+|               10 |
++------------------+
+1 row in set (0.00 sec)
+
+
+Example:
+--------
+
+
+
+mysql> select factorial(5);
++--------------+
+| factorial(5) |
++--------------+
+|          120 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select factorial(9);
++--------------+
+| factorial(9) |
++--------------+
+|       362880 |
++--------------+
+1 row in set (0.00 sec)
+
+Example:
+--------
+select first_name,hire_date,salary from myemp limit 10;
+
+CREATE FUNCTION fun60(d date) RETURNS int
+BEGIN
+        return year(curDate())-year(d);
+END##
+
+mysql> select first_name,hire_date,salary,fun60(hire_date) as Exp from myemp limit 10;
++------------+------------+----------+------+
+| first_name | hire_date  | salary   | Exp  |
++------------+------------+----------+------+
+| Steven     | 1998-06-17 | 24000.00 |   26 |
+| Neena      | 1987-06-18 | 17000.00 |   37 |
+| Lex        | 1987-06-19 | 17000.00 |   37 |
+| Alexander  | 1976-06-20 |  9000.00 |   48 |
+| Bruce      | 1987-06-21 |  6000.00 |   37 |
+| David      | 1987-06-22 |  4800.00 |   37 |
+| Valli      | 1980-06-23 |  4800.00 |   44 |
+| Diana      | 1987-06-24 |  4200.00 |   37 |
+| Nancy      | 1987-06-25 | 12000.00 |   37 |
+| Daniel     | 1992-06-26 |  9000.00 |   32 |
++------------+------------+----------+------+
+10 rows in set (0.02 sec)
+=======================================================================
+Note: Functions must return a value
+
+mysql> CREATE  PROCEDURE fun10()
+     BEGIN
+       declare msg text;
+       select 'Good Evening' into msg;
+    SELECT msg;
+     END ##
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CALL FUN10();
+    -> ##
++--------------+
+| msg          |
++--------------+
+| Good Evening |
++--------------+
+
+
+CREATE  FUNCTION fun0() 
+BEGIN
+    declare msg text;
+    select 'Good Evening' into msg;
+SELECT msg;
+END ##
+//ERROR
+
+CREATE  FUNCTION fun0() RETURNS VARCHAR(255)
+BEGIN
+    declare msg varchar(255);
+    select 'Good Evening' into msg;
+RETURN MSG;
+END ##
+//no error
+
+============================================================================
+Difference between Functions and Stored Procedures in SQL Server
+Function																		Stored Procedure
+1)Returns a single value									Can return zero, a single value, or several values.
+2)Only input parameters are permitted. Output parameters are not supported. 	Both input and output parameters are supported.
+3)Does not permit the usage of Try...Catch blocks are used to handle exceptions.	Allows the use of Try...Catch blocks are used to handle exceptions.
+4)A function cannot call a stored procedure.							A stored procedure can  called a function.
+5)A Select statement can invoke functions. 				Stored procedures can't be accessed by Select/Where or Having statements. 
+
+==================================================================================================
+
+FAQ:Stored Procedure Can return zero, a single value, or several values.
+
+
+The following creates a stored procedure that accepts the customer number and returns the counts of orders with different statuses (shipped, canceled, resolved) for that customer:
+
+DELIMITER $$
+
+CREATE PROCEDURE get_order_by_cust00(
+	IN order_id INT,
+	OUT shipped INT,
+	OUT canceled INT
+	)
+BEGIN
+		-- shipped
+		SELECT
+            count(*) INTO shipped
+        FROM
+            orders
+        WHERE
+         orderid=order_id       AND status = 'Shipped';
+
+		-- canceled
+		SELECT
+            count(*) INTO canceled
+        FROM
+          orders
+        WHERE
+         orderid=order_id       AND status = 'Cancelled';
+		
+END $$
+
+delimiter ;
+CALL get_order_by_cust00(1,@shipped,@canceled);
+SELECT @shipped,@canceled;
+
+====================================================================================================
+FAQ:A stored procedure can  called a function?
+
+
+mysql> select * from customer;
++--------+----------+-------------+
+| custno | custname | creditlimit |
++--------+----------+-------------+
+|      1 | rohan    |    50000.00 |
+|      2 | swapnil  |    60000.00 |
+|      3 | rahul    |   250000.00 |
++--------+----------+-------------+
+3 rows in set (0.00 sec)
+
+The following CREATE FUNCTION statement creates a function that returns the customer level based on credit:
+
+DELIMITER $$
+
+CREATE FUNCTION CustomerLevel11(
+	credit DECIMAL(10,2)
+) 
+RETURNS VARCHAR(20)
+BEGIN
+    DECLARE customerLevel VARCHAR(20);
+
+    IF credit >= 50000 THEN
+		SET customerLevel = 'PLATINUM';
+    ELSEIF (credit >= 50000 AND 
+			credit <= 10000) THEN
+        SET customerLevel = 'GOLD';
+    ELSEIF credit =25000 THEN
+        SET customerLevel = 'SILVER';
+    END IF;
+	-- return the customer level
+	RETURN (customerLevel);
+END$$
+
+DELIMITER ;
+
+
+
+SELECT 
+    custno, 
+    CustomerLevel(creditLimit)
+FROM
+    customer
+ORDER BY 
+    custName;
+
+
+Calling a stored function in a stored procedure
+The following statement creates a new stored procedure that calls the CustomerLevel() stored function:
+
+DELIMITER $$
+
+CREATE PROCEDURE GetCustomerLevel12(
+    IN  customerNo INT,  
+    OUT customerLevel VARCHAR(20)
+)
+BEGIN
+	DECLARE credit DEC(10,2) DEFAULT 0;
+    
+    -- get credit limit of a customer
+    SELECT 
+		creditLimit 
+	INTO credit
+    FROM customer    WHERE 
+		custno = customerNo;
+    
+    -- call the function 
+    SET customerLevel = CustomerLevel11(credit);
+END$$
+
+DELIMITER ;
+CALL GetCustomerLevel12(1,@customerLevel);
+SELECT @customerLevel;
+
+========================================================================================
+ CREATE TABLE sales1 (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+        product_name VARCHAR(255),
+        sale_date DATE,
+        amount DECIMAL(10, 2)
+     );
+Query OK, 0 rows affected (0.12 sec)
+
+ INSERT INTO sales1 (product_name, sale_date, amount)
+    VALUES
+         ('Phone', '2023-10-01', 200.00),
+         ('Tablet', '2023-10-05', 150.00),
+         ('Phone', '2023-10-10', 220.00),
+         ('Tablet', '2023-10-15', 180.00),
+         ('Phone', '2023-10-20', 250.00),
+         ('Tablet', '2023-10-25', 190.00),
+         ('Phone', '2023-11-02', 210.00),
+         ('Tablet', '2023-11-07', 160.00),
+         ('Phone', '2023-11-12', 230.00),
+         ('Tablet', '2023-11-18', 170.00),
+         ('Phone', '2023-11-23', 240.00),
+         ('Tablet', '2023-11-28', 200.00),
+         ('Phone', '2023-12-03', 190.00),
+         ('Tablet', '2023-12-08', 140.00),
+         ('Phone', '2023-12-13', 210.00),
+         ('Tablet', '2023-12-19', 160.00),
+         ('Phone', '2023-12-24', 230.00),
+         ('Tablet', '2023-12-29', 180.00);
+Query OK, 18 rows affected (0.02 sec)
+Records: 18  Duplicates: 0  Warnings: 0
+
+mysql> desc sales;
++--------------+---------------+------+-----+---------+----------------+
+| Field        | Type          | Null | Key | Default | Extra          |
++--------------+---------------+------+-----+---------+----------------+
+| id           | int           | NO   | PRI | NULL    | auto_increment |
+| product_name | varchar(255)  | YES  |     | NULL    |                |
+| sale_date    | date          | YES  |     | NULL    |                |
+| amount       | decimal(10,2) | YES  |     | NULL    |                |
++--------------+---------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+MYSQL CONTROL FLOW FUNCTIONS:
+-----------------------------
+1. case
+2. if
+3. ifnull
+
+
+The IF function takes three expressions, where the first expression will be evaluated. If the first expression evaluates to true, not null, and not zero, it returns the second expression. If the result is false, it returns the third expression.
+Syntax
+
+    IF ( expression 1, expression 2, expression 3)  
+
+Expression 1 	 	It is a value, which is used for validation.
+Expression 2 	 	It returns a value when the condition evaluates to true.
+Expression 3 	 	It returns a value when the condition evaluates to false.
+
+  EX:  SELECT IF(200>350,'YES','NO');  
+
+Assignment:
+
+    SELECT lastname,  
+    IF(age>=18,"ELIGIBLE","NOT ELIGIBLE")    
+    As Result  
+    FROM student;  
+=======================================================================================
+mysql> select sum(amount) from sales1;
++-------------+
+| sum(amount) |
++-------------+
+|     3510.00 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> select sum(if(product_name='phone',amount,0)) as 'Phone Sales' from sales1 limit 10;
++-------------+
+| Phone Sales |
++-------------+
+|     1980.00 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> select sum(if(product_name='tablet',amount,0)) as 'tab Sales' from sales;
++-------------+
+| Phone Sales |
++-------------+
+|     1530.00 |
++-------------+
+1 row in set (0.00 sec)
+
+
+mysql> select sum(
+     if(product_name='phone' and month(sale_date)=10 and year(sale_date)=2023,
+     amount,0)) as TotalSales from sales1;
++------------+
+| TotalSales |
++------------+
+|     670.00 |
++------------+
+1 row in set (0.00 sec)
+
+======================================================================================================
+
+case:
+
+The CASE expression validates various conditions and returns the result when the first condition is true. Once the condition is met, it stops traversing and gives the output. If it will not find any condition true, it executes the else block. When the else block is not found, it returns a NULL value.
+
+Syntax
+
+    CASE value   
+        WHEN [compare_value] THEN result   
+        [WHEN [compare_value] THEN result ...]   
+        [ELSE result]   
+    END  
+
+//SELECT CASE 1 WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'more' END as result;  
+SELECT CASE 2 WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'more' END as result;  
+SELECT CASE NULL  WHEN NULL THEN 'one' WHEN 2 THEN 'two' ELSE 'more' END as result;  
+
+desc offices;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| officeCode   | varchar(10) | NO   | PRI | NULL    |       |
+| city         | varchar(50) | NO   |     | NULL    |       |
+| phone        | varchar(50) | NO   |     | NULL    |       |
+| addressLine1 | varchar(50) | NO   |     | NULL    |       |
+| addressLine2 | varchar(50) | YES  |     | NULL    |       |
+| state        | varchar(50) | YES  |     | NULL    |       |
+| country      | varchar(50) | NO   |     | NULL    |       |
+| postalCode   | varchar(15) | NO   |     | NULL    |       |
+| territory    | varchar(10) | NO   |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+
+
+
+//whenever state value is null,then take country as input
+
+select
+    officecode,
+     state,
+     country
+     from offices
+     order by (
+     case  when state is null then country else state end);
+
++------------+------------+-----------+
+| officecode | state      | country   |
++------------+------------+-----------+
+| 6          | NULL       | Australia |
+| 1          | CA         | USA       |
+| 5          | Chiyoda-Ku | Japan     |
+| 4          | NULL       | France    |
+| 2          | MA         | USA       |
+| 3          | NY         | USA       |
+| 7          | NULL       | UK        |
++------------+------------+-----------+
+
+==================================================================
+select
+    officecode,
+if(state is null,'N/A',state) as State,country 
+     from offices;
+   
++------------+------------+-----------+
+| officecode | State      | country   |
++------------+------------+-----------+
+| 1          | CA         | USA       |
+| 2          | MA         | USA       |
+| 3          | NY         | USA       |
+| 4          | N/A        | France    |
+| 5          | Chiyoda-Ku | Japan     |
+| 6          | N/A        | Australia |
+| 7          | N/A        | UK        |
++------------+------------+-----------+  
+=====================================================================================
+
+Example:
+--------
+mysql> select orderID,PRODUCT_CODE,status from orders ;
+
+ select
+     sum(if(status='shipped',1,0)) as shipped,
+     sum(if(status='cancelled',1,0)) as cancelled,
+    sum(if(status='In Process',1,0)) as processing
+     from orders;
++---------+-----------+------------+
+| shipped | cancelled | processing |
++---------+-----------+------------+
+|       1 |         1 |          0 |
+========================================================
+MySQL IFNULL()
+
+The IFNULL function accepts two expressions, and if the first expression is not null, it returns the first arguments. If the first expression is null, it returns the second argument. 
+
+
+    IFNULL (Expression1, Expression2)  
+It returns expression1 when the expression1 is not null. Otherwise, it will return expression2.
+
+
+Examples:
+    SELECT IFNULL(0,5);  
+    SELECT IFNULL(NULL,5);  
+
+
+Example:
+--------
+select contactName,IFNULL(mobile,home) as PHONE_Number
+from contacts;
+
+
+=====================================================================
+
+MYSQL DATE & TIME FUNCTIONS:
+----------------------------
+mysql> select curdate();// PRINT CURRENT DATE
+
+mysql> select curtime();//CURRENT TIME
+
+mysql> select now();//CURRENT DATE AND TIME 
+
+mysql> select date_add(now(),INTERVAL 1 DAY);
+
+mysql> select date_add(now(),INTERVAL 1 MONTH);
+
+mysql> select date_add(now(),INTERVAL 1 YEAR);
+
+mysql> select date_add(now(),INTERVAL 1 SECOND);
+
+mysql> select date_add(now(),INTERVAL 1 MINUTE);
+
+mysql> select date_add(now(),INTERVAL 1 HOUR);
+
+mysql> select date_sub(now(),INTERVAL 1 SECOND);
+
+mysql> select date_sub(now(),INTERVAL 1 minute);
+
+mysql> select date_sub(now(),INTERVAL 1 hour);
+
+mysql> select date_sub(now(),INTERVAL 1 day);
+
+mysql> select date_sub(now(),INTERVAL 1 month);
+
+mysql> select date_sub(now(),INTERVAL 1 year);
+
+mysql> select date(now());
+
+mysql> select time(now());
+
+mysql> select second(now());
+
+mysql> select minute(now());
+
+mysql> select hour(now());
+
+mysql> select day(now());
+
+mysql> select month(now());
+
+mysql> select year(now());
+
+
+MYSQL STRING HANDLING FUNCTIONS
+concat -->Adds two or more expressions together
+--------------------------------
+mysql> select concat('abc','def','ijk','pqrs','wxyz');
++-----------------------------------------+
+| concat('abc','def','ijk','pqrs','wxyz') |
++-----------------------------------------+
+| abcdefijkpqrswxyz                       |
++-----------------------------------------+
+1 row in set (0.00 sec)
+
+
+INSTR()
+This function returns the index of the first occurrence of substring.
+mysql> select instr('java and python are very imp','python');
++------------------------------------------------+
+| instr('java and python are very imp','python') |
++------------------------------------------------+
+|                                             10 |
++------------------------------------------------+
+1 row in set (0.01 sec)
+
+mysql> select instr('java and python are very imp','java');
++----------------------------------------------+
+| instr('java and python are very imp','java') |
++----------------------------------------------+
+|                                            1 |
++----------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> select instr('java and python are very imp','php');
++---------------------------------------------+
+| instr('java and python are very imp','php') |
++---------------------------------------------+
+|                                           0 |
++---------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> select length('abc');
++---------------+
+| length('abc') |
++---------------+
+|             3 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> select length('IET CDAC');
+
+
+mysql> select left('welcome',2);
++-------------------+
+| left('welcome',2) |
++-------------------+
+| we                |
++-------------------+
+1 row in set (0.01 sec)
+
+mysql> select right('welcome',2);
++--------------------+
+| right('welcome',2) |
++--------------------+
+| me                 |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> select lower('PRAKASH');
++------------------+
+| lower('PRAKASH') |
++------------------+
+| prakash          |
++------------------+
+1 row in set (0.01 sec)
+
+mysql> select upper('prakash');
++------------------+
+| upper('prakash') |
++------------------+
+| PRAKASH          |
++------------------+
+1 row in set (0.01 sec)
+
+mysql> select replace('abcaba','a','u');
++---------------------------+
+| replace('abcaba','a','u') |
++---------------------------+
+| ubcubu                    |
++---------------------------+
+1 row in set (0.00 sec)
+
+mysql> select repeat('abc',4);
++-----------------+
+| repeat('abc',4) |
++-----------------+
+| abcabcabcabc    |
++-----------------+
+1 row in set (0.00 sec)
+
+mysql> select reverse('prakash');
++--------------------+
+| reverse('prakash') |
++--------------------+
+| hsakarp            |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> select substring('welcome',4);
++------------------------+
+| substring('welcome',4) |
++------------------------+
+| come                   |
++------------------------+
+1 row in set (0.00 sec)
+
+mysql> select substring('welcome',6);
++------------------------+
+| substring('welcome',6) |
++------------------------+
+| me                     |
++------------------------+
+1 row in set (0.00 sec)
+
+//SELECT REVERSE("MYSQL Tutorial");
+
+TRIM()
+Remove leading and trailing spaces from a string:
+ SELECT TRIM('    MYSQL Tutorial    ') AS TrimmedString;
++----------------+
+| TrimmedString  |
++----------------+
+| MYSQL Tutorial |
+
+
+ SELECT ASCII('NAME');
++---------------+
+| ASCII('NAME') |
++---------------+
+|            78 |
++---------------+
+
+
+
+
+
+
+
+
+
+
+MYSQL MATH FUNCTIONS:
+---------------------
+mysql> select abs(34);
++---------+
+| abs(34) |
++---------+
+|      34 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> select abs(-34);
++----------+
+| abs(-34) |
++----------+
+|       34 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> select exp(0);
++--------+
+| exp(0) |
++--------+
+|      1 |
++--------+
+1 row in set (0.00 sec)
+
+mysql> select exp(1);
++-------------------+
+| exp(1)            |
++-------------------+
+| 2.718281828459045 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> select pi();
++----------+
+| pi()     |
++----------+
+| 3.141593 |
++----------+
+1 row in set (0.01 sec)
+
+mysql> select pow(2,3);
++----------+
+| pow(2,3) |
++----------+
+|        8 |
++----------+
+1 row in set (0.00 sec)
+
+
+
+=======================================================================================

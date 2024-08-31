@@ -1,0 +1,486 @@
+
+
+
+Views:
+------
+
+==>on each db tables,views will be created and these views will be given to developers to develop UI.
+==>developers do not interact with original db tables,interact with views
+==>view is xerox copy created on original copy
+==>crud operations done thru views into db tables , updated happen in db tables
+==>view is virtual table
+
+What is a View in MySQL?
+
+==>VIEW is a database object that can be created like a table. In SQL, a VIEW is similar to a virtual table of original db table. But unlike tables VIEWS don’t actually store data(no physical existence).
+=> It is a temp table.
+=> from select statement we will create views.So, when we query a view, it actually gets the data from the underlying database tables
+=> view is nothing but WINDOW.
+==>So, in simple words, we can say that the views in MySQL act as an interface between the actual database table(s) and the user.
+==>like working with shadow,reflecting same view to us.
+==>view can extract data from base table and display data to users,view doesnot store any data.
+==>views are created with the help of select query
+==>query execution and data storing takes place in db tables.
+==>when we perform dml operations thru a view internally those operations are executed on base table and reflected in view.
+
+
+Adv of views
+==>VIEWS are complex SELECT statements used as virtual tables for ease of reference and reuse. The VIEWS are useful for storing complex SQL statements as a virtual table and request the VIEW as a single table instead of a complex query.
+==>For security purposes, we can restrict users from accessing underlying tables and instead give access to views or virtual tables with limited columns. 
+security can  be given at column or row level. which column there in views,those column data can be seen by user,remaining column will be hided.
+==>if we want data who is working under dept 30,details of emp who work in dept 30 shld only be retrieved,create views on row.
+==>checking integrity rules==>on base table,which kind of integrity rules we have applied,based on that thru view data can be accessed or inserted
+
+What are the differences between a table and a view in MySQL?
+
+1)    The table is physical i.e. it is an actual table whereas the view is logical i.e. it is a virtual table.
+ 2)A Table is an independent object whereas a view is a dependent object. That is a view depends on the table(s) from which it is going to fetch the data.
+  3)  The Table stores the actual data of the database whereas View creates a logical subset of data from one or more tables.
+   4) When a new table is created from an existing table, the new and old tables are independent themselves, that is the changes of one table will not be reflected into the other table whereas if a view is created based on a table, any changes that are performed on the table will reflect into the view and any changes performed on the view reflected in the table also.
+===========================================
+How many types of views are there in MySQL?
+
+There are two types of views in MySQL, they are as follows.
+
+    Simple view or Updatable views
+    Complex view or non-updatable views.
+
+What is a simple view or an Updatable view in MySQL?
+
+==> view that is created based on the columns of a single table is known as a simple view in MySQL. In the Simple View, we can perform all the DML operations, so it is also called an updatable view.
+=========================================================
+
+
+mysql> select * from emp;
++------+------------+------+
+| eid  | ename      | esal |
++------+------------+------+
+|    1 | prakash    | 3000 |
+|    2 | karan      | 5600 |
+|    3 | mahesh     | 5500 |
+|    4 | raghu      | 9000 |
+|    5 | hemanth    | 5500 |
+|    6 | prashanthi | 5800 |
++------+------------+------+
+6 rows in set (0.01 sec)
+
+Example1:
+---------
+mysql> show tables;
++---------------+
+| Tables_in_hhh |
++---------------+
+| emp           |
++---------------+
+1 row in set (0.04 sec)
+
+EX 1:CREATE A VIEW TO ACCESS DATA FROM EMP TABLE.
+
+mysql> create view empview1 as select * from emp;
+
+==>based on the select query,views will be generated. data retrieval thru select query,that data only showing by views.
+==>views doesnt show other than select query. completely depend on select query.
+==>A s per the query written in select statement,request will go to server,server will read the data and the reading data is showing
+thru views.
+==>whenever empview1 is called,internally select statement will get generated.
+==>in view ,whatever query is written(saved),it will be executed, data retrieve from table
+==>view looks like a table,developer dont know whether data is coming from original or virtual table.
+thru view we can perform operations
+
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show tables;
++---------------+
+| Tables_in_hhh |
++---------------+
+| emp           |
+| empview1      |
++---------------+
+2 rows in set (0.00 sec)
+
+mysql> insert into empview1 values(7,'Arjun',10000);
+
+==>this command is sending thru view,internally this command is working on main db table
+==>data will stored on main db table
+==>whatever data is inserted in main db table,same data will be reflected in views also,because it is mirror image
+
+mysql> select * from empview1;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  3000 |
+|    2 | karan      |  5600 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
++------+------------+-------+
+7 rows in set (0.00 sec)
+
+mysql> select * from emp;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  3000 |
+|    2 | karan      |  5600 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
++------+------------+-------+
+7 rows in set (0.00 sec)
+
+Example2:
+---------
+mysql> create view empview2 as select ename,esal from emp;
+==>access only few column 
+==>virtual view is sending to user,user is able to see only limited column
+==>in views how many  column are showing us ,exactly that no of values we can pass.
+==>remaining column will be null
+mysql> show tables;
++---------------+
+| Tables_in_hhh |
++---------------+
+| emp           |
+| empview1      |
+| empview2      |
++---------------+
+3 rows in set (0.00 sec)
+
+mysql> insert into empview2 values('Swetha',11000);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from empview2;
++------------+-------+
+| ename      | esal  |
++------------+-------+
+| prakash    |  3000 |
+| karan      |  5600 |
+| mahesh     |  5500 |
+| raghu      |  9000 |
+| hemanth    |  5500 |
+| prashanthi |  5800 |
+| Arjun      | 10000 |
+| Swetha     | 11000 |
++------------+-------+
+8 rows in set (0.00 sec)
+
+mysql> select * from emp;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  3000 |
+|    2 | karan      |  5600 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
+| NULL | Swetha     | 11000 |
++------+------------+-------+
+8 rows in set (0.00 sec)
+
+Example3:
+---------
+mysql> select * from emp;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  3000 |
+|    2 | karan      |  5600 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
+| NULL | Swetha     | 11000 |
++------+------------+-------+
+8 rows in set (0.00 sec)
+
+mysql> create view empview3 as select ename,esal from emp where esal<=6000;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select * from empview3;
++------------+------+
+| ename      | esal |
++------------+------+
+| prakash    | 3000 |
+| karan      | 5600 |
+| mahesh     | 5500 |
+| hemanth    | 5500 |
+| prashanthi | 5800 |
++------------+------+
+5 rows in set (0.01 sec)
+
+mysql> insert into empview3 values('Lilli',4500);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into empview3 values('Radhika',8500);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from emp;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  3000 |
+|    2 | karan      |  5600 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
+| NULL | Swetha     | 11000 |
+| NULL | Lilli      |  4500 |
+| NULL | Radhika    |  8500 |
++------+------------+-------+
+10 rows in set (0.00 sec)
+
+mysql> select * from empview3;
++------------+------+
+| ename      | esal |
++------------+------+
+| prakash    | 3000 |
+| karan      | 5600 |
+| mahesh     | 5500 |
+| hemanth    | 5500 |
+| prashanthi | 5800 |
+| Lilli      | 4500 |
++------------+------+
+6 rows in set (0.00 sec)
+================================================================
+QUES:create view to retrieval emp details who are working under dept no 50;(HIDING ROWS)
+==>create view vv as select * from emp where deptno=20;
+==>select * from vv;
+==>row level security
+=======================================================
+
+
+
+Example4:
+---------
+mysql> update empview3 set esal = 9999.0 where ename='prakash';
+
+==>this query executing on main db table,updated data will be reflected in view
+
+mysql> select * from emp;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  9999 |
+|    2 | karan      |  5600 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
+| NULL | Swetha     | 11000 |
+| NULL | Lilli      |  4500 |
+| NULL | Radhika    |  8500 |
++------+------------+-------+
+10 rows in set (0.00 sec)
+
+mysql> select * from empview3;
++------------+------+
+| ename      | esal |
++------------+------+
+| karan      | 5600 |
+| mahesh     | 5500 |
+| hemanth    | 5500 |
+| prashanthi | 5800 |
+| Lilli      | 4500 |
++------------+------+
+5 rows in set (0.00 sec)
+
+Example5:
+---------
+mysql> delete from empview3 where ename='karan';
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from empview3;
++------------+------+
+| ename      | esal |
++------------+------+
+| mahesh     | 5500 |
+| hemanth    | 5500 |
+| prashanthi | 5800 |
+| Lilli      | 4500 |
++------------+------+
+4 rows in set (0.00 sec)
+
+mysql> select * from emp;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  9999 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
+| NULL | Swetha     | 11000 |
+| NULL | Lilli      |  4500 |
+| NULL | Radhika    |  8500 |
++------+------------+-------+
+9 rows in set (0.00 sec)
+
+
+Insert, Update & Delete ---> Reflection will be there in both tables (original & virtual )
+
+Hence these views are called as UPDATABLE views
+==============================================================================
+Example6:
+---------
+with check: this statement is used to restricted insertion of row on base table thru a view object
+==>at inserting data will checked,whether it is valid or not,based on verification
+data will be allowed on base table.
+==>insertion and accessing is restricted
+
+mysql> create view empview4 as select ename,esal from emp
+    -> where esal<=6000 WITH CHECK OPTION;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> select * from empview4;
++------------+------+
+| ename      | esal |
++------------+------+
+| mahesh     | 5500 |
+| hemanth    | 5500 |
+| prashanthi | 5800 |
+| Lilli      | 4500 |
++------------+------+
+4 rows in set (0.00 sec)
+
+mysql> insert into empview4 values('Samantha',5600);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from empview4;
++------------+------+
+| ename      | esal |
++------------+------+
+| mahesh     | 5500 |
+| hemanth    | 5500 |
+| prashanthi | 5800 |
+| Lilli      | 4500 |
+| Samantha   | 5600 |
++------------+------+
+5 rows in set (0.00 sec)
+
+mysql> select * from emp;
++------+------------+-------+
+| eid  | ename      | esal  |
++------+------------+-------+
+|    1 | prakash    |  9999 |
+|    3 | mahesh     |  5500 |
+|    4 | raghu      |  9000 |
+|    5 | hemanth    |  5500 |
+|    6 | prashanthi |  5800 |
+|    7 | Arjun      | 10000 |
+| NULL | Swetha     | 11000 |
+| NULL | Lilli      |  4500 |
+| NULL | Radhika    |  8500 |
+| NULL | Samantha   |  5600 |
++------+------------+-------+
+10 rows in set (0.00 sec)
+
+
+mysql> insert into empview4 values('Chaithanya',9600);
+ERROR 1369 (HY000): CHECK OPTION failed 'hhh.empview4'
+================================================================
+q)create a view  to access and accept emp details whose salary is 5000?
+====================================================================
+Example7:
+---------
+mysql> create view empview5 as select ename,esal,esal+esal*0.2 as 'Total' from emp;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select * from empview5;
++------------+-------+---------+
+| ename      | esal  | Total   |
++------------+-------+---------+
+| prakash    |  9999 | 11998.8 | 
+| mahesh     |  5500 |    6600 |
+| raghu      |  9000 |   10800 |
+| hemanth    |  5500 |    6600 |
+| prashanthi |  5800 |    6960 |
+| Arjun      | 10000 |   12000 |
+| Swetha     | 11000 |   13200 |
+| Lilli      |  4500 |    5400 |
+| Radhika    |  8500 |   10200 |
+| Samantha   |  5600 |    6720 |
++------------+-------+---------+
+10 rows in set (0.01 sec)
+
+mysql> insert into empview5 values('KKK',100,102.0);
+ERROR 1348 (HY000): Column 'Total' is not updatable
+mysql>
+
+=======================================================
+How to DROP a View in MySQL?
+
+To drop a view in MySQL, we need to use the following syntax.
+DROP VIEW viewname;
+=======================================================
+How to Modify a view in MySQL?
+
+Once the view is created, later if you want to update the view, then you can also do the same in MySQL. 
+To modify or update the already created view without dropping it we can use ALTER VIEW statement. Following is the syntax.
+
+alter view view_name as
+select * from table
+where conditions;
+
+For example, from our vwEmployee1 view, we also want to remove the name column. 
+
+ALTER VIEW vwEmployee1 
+AS    
+SELECT Id, Department 
+FROM Employee;  
+
+Now, issue a select query against the view and you will see that only three columns’ data are returned from the Employee table.
+==========================================================
+What is a complex view in MySQL?
+
+When we create a view based on more than 1 table by using MySQL JOIN, then it is known as a complex view and on a complex view, we can perform DML operations. So, a complex view is also called a non-updatable view.
+==>when we called a view a complex view when
+created on multiple base tables
+using group by,having,distinct,joins or subquery
+
+==>by default complex views are not allowed to perform dml operations
+===============================================
+
+Let us create a VIEW-based INNER JOIN SELECT statement. 
+We want a view that will retrieve the data from the Emp and Department table and the column the view should include are EmployeeId, Employee Name, Salary, dept id and dept name. To do so, execute the below CREATE VIEW SQL Statement.
+
+CREATE VIEW vwEmployees
+AS 
+SELECT emp.Id, emp.Name, emp.Salary
+FROM Emp 
+INNER JOIN Dept 
+on Emp.dep_id=Dept.dep_id;
+
+Now, issue a select query against the vwEmployees complex view by executing the below SQL SELECT Statement.
+
+SELECT * FROM vwEmployees;
+
+Once you execute the above query, you will get the following output which will retrieve the data from both Employee and Gender table 
+=======================================================
+MySQL Complex View Example
+
+A view that is created based on a single table will also be considered as a complex view provided if the query contains Distinct. Aggregate Function, Group by Clause, having Clause, calculated columns, and set operations. 
+For example, the following is a view based on the single table, but it will be considered as a complex view as it uses the group by clause.
+
+CREATE VIEW vwCountEmployees
+AS 
+SELECT Department, Count(*) as TotalEmployee
+FROM Employee Group BY Department;
+
+//alias name shld be der for aggregate function
+Now, issue a select query against the vwCountEmployees complex view by executing the below SQL SELECT Statement.
+
+SELECT * FROM vwEmployees;
+
+Once you execute the above SQL query, you will get the following output which will retrieve the aggregated data i.e. the Department name and the number of employees in each department as shown in the below image.
+==============================================================================================

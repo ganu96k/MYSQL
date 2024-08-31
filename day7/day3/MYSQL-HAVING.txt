@@ -1,0 +1,78 @@
+The MySQL HAVING Clause
+
+We know that the WHERE clause is used to place conditions on columns but what if we want to place conditions on groups? This is where the HAVING clause comes into use. 
+We can use the HAVING clause to place conditions to decide which group will be part of the final result set. Also, we can not use aggregate functions like SUM(), COUNT(), etc. with the WHERE clause. So we have to use the HAVING clause if we want to use any of these functions in the conditions. 
+The HAVING clause is used instead of WHERE with aggregate functions.
+The HAVING clause was added to SQL because the WHERE keyword cannot be used with aggregate functions.
+MySQL HAVING Clause is used with GROUP BY clause. It always returns the rows where condition is TRUE.
+
+SELECT column_name(s)
+FROM table_name
+GROUP BY column_name(s)
+HAVING condition
+ORDER BY column_name(s);
+
+Advantages:
+
+    It allows for the filtering of groups based on a condition that involves an aggregate function.
+    ======================================================================
+Difference between Having clause and Group by clause : 
+S.No. 	Having Clause 	GroupBy Clause
+1. 	It is used for applying some extra condition to the query. 	
+The groupby clause is used to group the data according to particular column or row.
+2. 	Having cannot be used without groupby clause,
+	groupby can be used without having clause with the select statement.
+3. 	The having clause can contain aggregate functions. 	
+	It cannot contain aggregate functions.
+4. 	It restrict the query output by using some conditions 	
+	It groups the output on basis of some rows or columns.
+
+================================================================
+//SELECT COUNT(dep_id), dep_id FROM myemp 
+GROUP BY dep_id  
+having dep_id>=40 
+ORDER BY dep_id;
+
+//SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+HAVING COUNT(CustomerID) > 5;
+===============================================================
+The following SQL statement lists the number of customers in each country, sorted high to low (Only include countries with more than 5 customers):
+
+Example
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+HAVING COUNT(CustomerID) > 5
+ORDER BY COUNT(CustomerID) DESC;
+====================================================
+Consider the food database
+
+Select food items with cost greater than 200
+
+SELECT  food_item 
+from food 
+GROUP BY(food_item) 
+HAVING SUM(cost) > 200;
+=======================================
+===========================================
+
+===================================================
+
+HAVING Clause with SUM function
+Consider a table "employees" table having the following data.
+Here, we use the SUM function with the HAVING Clause to return the emp_name and sum of their working hours.
+
+SELECT emp_name, SUM(working_hours) AS "Total working hours"  
+FROM employees  
+GROUP BY emp_name  
+HAVING SUM(working_hours) > 5;  
+
+Simply, it can also be used with COUNT, MIN, MAX and AVG functions.
+
+============================================================
+
+
+
+

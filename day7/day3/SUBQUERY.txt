@@ -1,0 +1,87 @@
+SUBQUERY
+
+use whenever we want to perform operations on table data which is not possible by using single query
+
+
+A subquery in MySQL is a query, which is nested into another SQL query and embedded with SELECT, INSERT, UPDATE or DELETE statement along with the various operators. 
+We can also nest the subquery with another subquery. A subquery is known as the inner query, and the query that contains subquery is known as the outer query. 
+The inner query executed first gives the result to the outer query, and then the main/outer query will be performed. outer query will always depend on resultset of inner query
+
+MySQL allows us to use subquery anywhere, but it must be closed within parenthesis.
+
+The following are the rules to use subqueries:
+
+    Subqueries should always use in parentheses.
+       We can use various comparison operators with the subquery, such as >, <, =, IN, ANY, SOME, and ALL. A multiple-row operator is very useful when the subquery returns more than one row.
+    We cannot use the ORDER BY clause in a subquery, although it can be used inside the main query.
+    
+The following are the advantages of using subqueries:
+
+    The subqueries make the queries in a structured form that allows us to isolate each part of a statement.
+    The subqueries provide alternative ways to query the data from the table; otherwise, we need to use complex joins and unions.
+    The subqueries are more readable than complex join or union statements.
+
+=================================================================
+SELECT column_list (s) FROM  table_name  
+WHERE  column_name OPERATOR  
+   (SELECT column_list (s)  FROM table_name [WHERE]) 
+========================================================
+A) SINGLE -ROW SUBQUERY
+ WHEN A SUBQUERY RETURNS A SINGLE VALUE.
+
+==>waq to get emp details from table who are getting the first highest salary ?
+select * from emp where salary=?
+select * from emp where salary=max(salary);
+
+// select * from myemp where salary=(select max(salary) from myemp);
+    ================================================================
+B) MULTIPLE ROW SUBQUERIES
+
+==>waq  to display details from the table whose department is same as departmentof the employee smith or scott?
+select * from myemp where dep_id in(select dep_id from myemp where first_name='hermann' or first_name='scott')
+    -
+===========================================================================================================
+Following is a simple SQL statement that returns the employee detail whose id matches in a subquery:
+select first_name,last_name from myemp where dep_id in(select dep_id from myemp where job_id='AD_PRES');
+
+select first_name,last_name from myemp where dep_id in(select dep_id from myemp where salary >=5000);
+This query first executes the subquery that returns the dept id whose income > 5000. Second, the main query will return the employees all details whose dept id are in the result set returned by the subquery.
+
+
+============================================================================
+============================================================================
+MySQL Subquery with IN or NOT-IN Operator
+
+
+The following subquery with NOT IN operator returns the student detail who does not belong to Los Angeles City from both tables as follows:
+
+    SELECT Name, City FROM student  
+    WHERE City NOT IN (  
+    SELECT City FROM student2 WHERE City='Los Angeles');  
+
+After execution, we can see that the result contains the student details not belonging to Los Angeles City.
+
+
+==> select id ,name from student where courseid=(select cid from course where cid=222);
+============================================================================
+===============================================================
+MYSQLTUTORIAL
+For example, the following query uses a subquery to return the employees who work in the offices located in the USA.
+
+ //select lastname,firstname from employees where officecode in (select officecode from offices where country='usa')
+;
+
+=========================================================================================
+
+PRACTICAL
+use the table payments in the sample database for the demonstration.
+1)query returns the customer who has second highest payment.
+2)find customers whose payments are greater than the average payment using a subquery:
+
+
+
+
+
+
+
+

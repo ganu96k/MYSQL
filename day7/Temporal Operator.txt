@@ -1,0 +1,12 @@
+Temporal Operator in MySQL
+
+Intervals are used while using date and time in MySQL. For example, A week means today +7 days. Here, the plus sign is used in the temporal calculation and called a temporal operator.
+
+ SELECT (CURRENT_DATE - INTERVAL 7 DAY) AS date;
+Here, CURRENT_DATE represents the currents time on the server.
+==================================================================
+The following SQL statement is to display tomorrow’s date.
+SELECT (CURRENT_DATE + INTERVAL 1 DAY) AS TomorrowDate;
+===============================================================
+mysql> SELECT (CURRENT_DATE-INTERVAL 2 month) AS date;
+mysql>SELECT (CURRENT_DATE-INTERVAL 2 year) AS date;

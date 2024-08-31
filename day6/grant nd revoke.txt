@@ -1,0 +1,110 @@
+//create new user
+mysql> create user pqrs@localhost identified by '1234';
+Query OK, 0 rows affected (0.08 sec)
+
+=================================================
+we can connect new user to db
+
+
+C:\Users\Prakash>mysql -u pqrs -p
+Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 48
+Server version: 8.0.36 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| performance_schema |
++--------------------+
+2 rows in set (0.01 sec)
+==========================================================================
+GRANT Statement
+
+The grant statement enables system administrators to assign privileges and roles to the MySQL user accounts so that they can use the assigned permission on the database whenever required.
+
+mysql> show grants for pqrs@localhost;
++------------------------------------------+
+| Grants for pqrs@localhost                |
++------------------------------------------+
+| GRANT USAGE ON *.* TO `pqrs`@`localhost` |
++------------------------------------------+
+1 row in set (0.00 sec)
+===========================================================
+//on screen1
+
+mysql> use mysql27;
+Database changed
+
+mysql> create user aaa@localhost identified by 'welcome';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> grant select on mysql27.product to aaa@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql>grant insert,update  on mysql27.product to aaa@localhost;
+
+===============================================================
+//screen 2
+//establish connection with new username and password
+show database;
+mysql> use mysql27;
+Database changed
+mysql> select * from product;
+
+
+//mysql> insert into product values(2,'ff',44,55);
+ERROR 1142 (42000): INSERT command denied to user 'aaa'@'localhost' for table 'product'
+==================================================================
+We can choose access right from the below list on which privileges can be applied.
+
+    SELECT: It enables us to view the result set from a specified table.
+    INSERT: It enables us to add records in a given table.
+    DELETE: It enables us to remove rows from a table.
+    CREATE: It enables us to create tables/schemas.
+    ALTER: It enables us to modify tables/schemas.
+    UPDATE: It enables us to modify a table.
+    DROP: It enables us to drop a table.
+    INDEX: It enables us to create indexes on a table.
+    ALL: It enables us to give ALL permissions except GRANT privilege.
+    GRANT: It enables us to change or add access rights.
+
+===========================================================================
+REVOKE Statement
+
+The revoke statement enables system administrators to revoke privileges and roles to the MySQL user accounts so that they cannot use the assigned permission on the database in the past.
+Syntax
+
+The following are the basic syntax of using the REVOKE statement:
+
+    REVOKE privilege_name(s)   
+    ON object   
+    FROM user_account_name;  
+
+If we want to revoke all privileges assign to the user, execute the following statement:
+
+    mysql> REVOKE ALL, GRANT OPTION FROM john@localhost;  
+================================================================
+We can revoke privileges from the below list on which privileges can be applied.
+
+    CREATE: It enables the user account to create databases and tables.
+    DROP: It allows the user account to drop databases and tables.
+    DELETE: It enables the user account to delete rows from a specific table.
+    INSERT: It allows the user account to insert rows into a specific table.
+    SELECT: It enables the user account to read a database.
+    UPDATE: It enables the user account to update table rows.
+
+=======================================================
+
+
+============================================================

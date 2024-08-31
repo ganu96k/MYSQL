@@ -1,0 +1,1175 @@
+Stored Procedure
+
+==>If we intend to save  query on the database server for later execution, one way to achieve this is by using a stored procedure.
+==>A procedure (often called a stored procedure) is a collection of pre-compiled SQL statements stored inside the database.
+==>A Stored Procedure is a type of code in SQL that can be stored for later use and can be used many times. So, whenever you need to execute the query, instead of calling it you can just call the stored procedure. 
+==>A stored procedure is a set of declarative SQL statements stored within the MySQL Server. Its a wrapper of a set of SQL statements stored in the MySQL database server.
+
+
+Stored Procedure Features
+1)Stored Procedure increases the performance of the applications. Once stored procedures are created, they are compiled and stored in the database.
+2)Stored procedure reduces the traffic between application and database server. Because the application has to send only the stored procedure's name and parameters instead of sending multiple SQL statements.
+3)  Centralize business logic in the database – You can use stored procedures to implement reusable business logic across multiple applications. They streamline the process, reducing the need to duplicate the same logic in multiple applications and contributing a more consistent database.
+
+HOW TO CREATE PROCEDURE?
+
+syntax:
+
+    DELIMITER /  
+    CREATE PROCEDURE procedure_name ([IN | OUT | INOUT] parameter_name datatype )    
+    BEGIN    
+        Declaration_section    
+        Executable_section    
+    END &&  
+    DELIMITER ;   
+
+
+mysql> CALL PROCEDURE_NAME();
+===========================================================================
+MySQL Delimiter
+
+==>A MySQL client program, such as MySQL Workbench or the mysql program, uses the default delimiter (;) to separate statements and execute each separately.
+==>If you use a MySQL client program to define a stored procedure that contains semicolons, the MySQL client program will not treat the entire stored procedure as a single statement; instead, it will recognize it as multiple statements.
+
+how to change the current delimiter to //
+
+DELIMITER //
+After you change the delimiter, you can use the new delimiter to end a statement, as follows:
+
+DELIMITER //
+SELECT * FROM customers //
+SELECT * FROM products //
+To revert to the default delimiter, which is a semicolon (;), you use the following statement:
+
+DELIMITER ;
+
+===============================================================================================================
+The following CREATE PROCEDURE statement creates a new stored procedure encapsulating the query 
+
+ DELIMITER $$
+CREATE PROCEDURE MYEMP1234()      
+BEGIN      
+SELECT * FROM MYEMP 	
+ORDER BY FIRST_NAME;
+    END$$
+
+
+DELIMITER ;
+ 
+After saving the stored procedure, you can invoke it by using the CALL statement:
+CALL ST_MYEMP()
+The statement returns the same result as the query.
+
+The initial invocation of a stored procedure involves the following actions by MySQL:
+    First, find the stored procedure by its name in the database catalog.
+    Second, compile the code of the stored procedure.
+    Third, store the compiled stored procedure in a cache memory area.
+    Finally, execute the stored procedure.
+
+If you invoke the same stored procedure again within the same session, MySQL will execute it from the cache without the need for recompilation.
+
+==>If you attempt to create a stored procedure that already exists, MySQL will issue an error.
+To prevent the error, you can add an additional clause IF NOT EXISTS after the CREATE PROCEDURE
+ DELIMITER $$
+ CREATE PROCEDURE IF NOT EXISTS MYEMP1()
+     BEGIN
+     SELECT * FROM MYEMP
+	ORDER BY FIRST_NAME;
+    END$$
+DELIMITER ;
+
+//SHOW WARNINGS;
+
+================================================================================================
+
+MySQL Stored Procedure Variables
+
+==>A variable is a named data object whose value can change during the execution of a stored procedure.Typically, you use variables to hold immediate results. These variables are local to the stored procedure.
+==>Before using a variable, you need to declare it.
+
+Declaring variables
+
+==>To declare a variable inside a stored procedure, you use the DECLARE  statement as follows:
+
+SYNTAX:
+DECLARE variable_name datatype(size) [DEFAULT default_value];
+
+==> assign a default value to the variable using the DEFAULT option. If you declare a variable without specifying a default value, its default value is NULL.
+
+The following example declares a variable named totalSale with the data type DEC(10,2) and default value of 0.0:
+DECLARE totalSale DEC(10,2) DEFAULT 0.0;
+DECLARE totalQty, stockCount INT DEFAULT 0;
+
+NOTE:
+it is not possible to declare multiple variables with different data types using a single DECLARE statement.
+For example, the following declaration will cause a syntax error:
+
+DECLARE amount DECMIAL(10,2), 
+        currency CHAR(3) ;
+
+To fix the error, you need to use multiple DECLARE statements as follows:
+DECLARE amount DECIMAL(10,2);
+DECLARE currency CHAR(3);
+=================================================================
+Assigning variables
+
+==>To assign a variable a value, you use the SET statement:
+
+SET variable_name = value;
+
+For example:
+DECLARE total INT DEFAULT 0;
+SET total = 10;
+The value of the total variable is 10  after the assignment.
+----------------------------------------------------------------------------
+In addition to the SET statement, you can use the SELECT INTO statement to assign the result of a query to a variable as shown in the following examplee\
+DELIMITER ##
+CREATE PROCEDURE D()
+BEGIN
+DECLARE NOOFEMP INT DEFAULT 0;
+
+SELECT COUNT(*) 
+INTO NOOFEMP
+FROM MYEMP;
+SELECT NOOFEMP;
+END ##
+DELIMITER ;
+CALL D();
++---------+
+| NOOFEMP |
++---------+
+|     106 |
++---------+
+
+==================================================================================================================
+Example 1: Write a stored procedure to select no of distinct jobtitle in employees table
+
+ DELIMITER $$
+ CREATE PROCEDURE ST_GETJOBTITLE23()
+    BEGIN
+     DECLARE totalno INT DEFAULT 0;
+     select count(distinct jobtitless) into totalno from employees;
+     select totalno ;
+     end$$
+
+ delimiter ;
+ Call st_getjobtitle2();
++---------+
+| totalno |
++---------+
+|      7 |
++---------+
+====================================================================
+
+Example 2: create procedure to display records present in books table?
+---------------------------------------------------------------------
+delimiter //
+ CREATE PROCEDURE sampleP2()
+    BEGIN
+              select * from books;
+    END //
+delimiter ;
+ CALL sampleP2();
+
+===========================================================================
+Example 3: create procedure to display records present in books table having given author id?
+---------------------------------------------------------------------------------
+DELIMITER //
+ CREATE PROCEDURE samplePro2(x int)
+    BEGIN
+        select * from books where AuthorId=x;
+    END //
+
+ DELIMITER ;
+ CALL samplePro2(1);
+ CALL samplePro2(8);
+============================================================================================
+
+Example 4: create a procedure with customized message?
+
+ DELIMITER ##
+ CREATE PROCEDURE samplePro3(x int)
+     BEGIN
+           declare a varchar(255);
+           declare b int;
+           select title,authorid into a,b from books where bookid=x;
+           select concat(a,' was written by author having id: ',b);
+     END ##
+ DELIMITER ;
+ call samplePro3(13);
+
+==========================================================================
+Example 5: create procedure to perform addition of two numbers?
+--------------------------------------------------------------
+delimiter ##
+CREATE PROCEDURE samplePro4(x int,y int)
+BEGIN
+        declare z int;
+        set z = x+y;
+        select z as 'Result';
+END##
+delimiter ;
+
+call samplePro4(10,20);
++--------+
+| Result |
++--------+
+|     30 |
++--------+
+
+================================================================================
+Example 6: create stored procedure to insert values into emp table?
+
+mysql> desc emp1;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| id     | int          | YES  |     | NULL    |       |
+| name   | varchar(255) | YES  |     | NULL    |       |
+| salary | double       | YES  |     | NULL    |       |
+| doj    | date         | YES  |     | NULL    |       |
++--------+--------------+------+-----+---------+-------+
+
+
+
+
+ select * from emp1;
+Empty set (0.00 sec)
+
+call samplePro6(1,'Prakash',9000.00,'2024-01-01');
+
+call samplePro6(2,'Kalyan',10000,'2023-01-04');
+
+ select * from emp1;
++------+---------+--------+------------+
+| id   | name    | salary | doj        |
++------+---------+--------+------------+
+|    1 | Prakash |   9000 | 2024-01-01 |
+|    2 | Kalyan  |  10000 | 2023-01-04 |
++------+---------+--------+------------+
+2 rows in set (0.00 sec)
+===============================================================================
+Assignment
+display all records of student table whose marks are greater than 70 and count all the table rows. 
+======================================================================================
+There are different types of variables are existed in stored procedures...
+
+1. local variables ------> live within the procedure
+we can declare local variables directly....
+
+2. session variables ----> live within the entire session
+we have to declare session variables by using @ symbol....
+
+
+Example 7: Demonstration on local variables
+-------------------------------------------
+delimiter @@
+CREATE PROCEDURE samplePro8()
+BEGIN
+    -- declare local variable i
+    declare i int default 1;
+    set i = i + 1;
+    select i;
+END @@
+delimiter;
+
+ call samplePro8();
++------+
+| i    |
++------+
+|    2 |
++------+
+
+ call samplePro8();
++------+
+| i    |
++------+
+|    2 |
++------+
+
+ call samplePro8();
++------+
+| i    |
++------+
+|    2 |
++------+
+====================================================================================
+Example 8: Demonstration on session variables
+--------------------------------------------
+delimiter @@
+CREATE PROCEDURE samplePro00()
+BEGIN
+    -- use session variable
+    set @j = @j + 1;
+    select @j as 'session_var';
+END @@
+delimiter ;
+
+ set @j=1;
+
+mysql> call samplePro00();
++-------------+
+| session_var |
++-------------+
+|           2 |
++-------------+
+
+mysql> call samplePro7();
++-------------+
+| session_var |
++-------------+
+|           3 |
++-------------+
+
+mysql> call samplePro7();
++-------------+
+| session_var |
++-------------+
+|           4 |
++-------------+
+
+Example 9: Demostration on both local and session variables
+----------------------------------------------------------
+CREATE PROCEDURE samplePro8()
+BEGIN
+    declare m int default 1;
+    set m = m + 1;
+    set @n = @n + 1;
+    select m as 'Local',@n as 'Session';
+END
+
+mysql> set @n=1;
+
+mysql> call samplePro8();
++-------+---------+
+| Local | Session |
++-------+---------+
+|     2 |       2 |
++-------+---------+
+
+mysql> call samplePro8();
++-------+---------+
+| Local | Session |
++-------+---------+
+|     2 |       3 |
++-------+---------+
+
+mysql> call samplePro8();
++-------+---------+
+| Local | Session |
++-------+---------+
+|     2 |       4 |
++-------+---------+
+
+mysql> call samplePro8();
++-------+---------+
+| Local | Session |
++-------+---------+
+|     2 |       5 |
++-------+---------+
+
+======================================================================================================
+MySQL procedure parameter has one of three modes:
+
+1)IN parameter
+It is the default mode. It takes a parameter as input. When we define it, the calling program has to pass an argument to the stored procedure. 
+
+2)OUT parameters
+It is used to pass a parameter as output. Its value can be changed inside the stored procedure, and the changed (new) value is passed back to the calling program.
+
+3)INOUT parameters
+It is a combination of IN and OUT parameters. It means the calling program can pass the argument, and the procedure can modify the INOUT parameter, and then passes the new value back to the calling program.
+
+===========================================================================================
+The following example creates a stored procedure that finds all offices that are located in a country specified by the input parameter countryName:
+
+ DELIMITER //
+ CREATE PROCEDURE GetOfficeByCountry1(
+      IN countryName VARCHAR(255)
+     )
+     BEGIN
+      SELECT *
+              FROM offices
+      WHERE country = countryName;
+     END //
+
+In this example, the countryName is the IN parameter of the stored procedure.
+Suppose that you want to find offices located in the USA, you need to pass an argument (USA) to the stored procedure as shown in the following query:
+
+CALL GetOfficeByCountry('USA');
+
+Because the countryName is the IN parameter, you must pass an argument. If you don’t do so, you’ll get an error:
+CALL GetOfficeByCountry();
+=================================================================================================
+
+The OUT parameter example
+The following defines a stored procedure that returns the number of offices based on their location (country).
+
+delimiter $$
+ CREATE PROCEDURE Getnoofoffice0(
+     in country_name varchar(20),out total int )
+     begin
+     select count( country) into total from offices where country=country_name;
+     end$$
+delimiter ;
+call Getnoofoffice10('USA',@total);
+SELECT @TOTAL;
+=================================================================================================
+    DELIMITER &&  
+    CREATE PROCEDURE display_max_mark (OUT highestmark INT)  
+    BEGIN  
+        SELECT MAX(marks) INTO highestmark FROM student_info;   
+    END &&  
+    DELIMITER ;  
+
+This procedure's parameter will get the highest marks from the student_info table. When we call the procedure, the OUT parameter tells the database systems that its value goes out from the procedures. Now, we will pass its value to a session variable @M in the CALL statement as follows:
+
+    CALL display_max_mark(@M);  
+    SELECT @M;  
+============================================================================================
+Procedures with INOUT Parameter
+
+It will act as both input and output.
+It receives the data and send data to the caller.
+
+Example:
+----------
+delimiter @@
+CREATE  PROCEDURE setCounter(INOUT counter int,IN increment int)
+BEGIN
+        set counter = counter + increment;
+END @@
+delimiter ;
+
+mysql> set @counter = 1;
+
+mysql> call setCounter(@count,5);
+
+mysql> select @count;
++----------+
+| @count |
++----------+
+|        6 |
++----------+
+
+mysql> call setCounter(@counter,5);
+
+mysql> select @counter;
++----------+
+| @counter |
++----------+
+|       11 |
++----------+
+1 row in set (0.00 sec)
+
+=============================================================================================
+Example :
+
+    DELIMITER &&  
+    CREATE PROCEDURE display0 (INOUT var INT)  
+    BEGIN  
+        SELECT id INTO var FROM student WHERE courseid = var;   
+    END &&  
+    DELIMITER ;  
+
+
+     SET @M = 222;  
+     CALL display0(@M);  
+     SELECT @M;  
+====================================================================================
+
+Example 11:
+---------
+CREATE PROCEDURE getDataFromEmp(IN sal double)
+BEGIN
+    select * from myemp where salary<=sal limit 10;
+END 
+
+ call getDataFromEmp(3000);
+==================================================================
+Example12:
+----------
+CREATE PROCEDURE getMinSalary(OUT sal double)
+BEGIN
+        select min(salary) into sal from myemp;
+END
+
+
+Example13:
+----------
+CREATE  PROCEDURE getMaxSalary(OUT sal double)
+BEGIN
+    select max(salary) into sal from myemp;
+END
+
+
+mysql> call getMinSalary(@value1);
+ select @value1;
++---------+
+| @value1 |
++---------+
+|    2100 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> call getMaxSalary(@value2);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select @value2;
++---------+
+| @value2 |
++---------+
+|   24000 |
++---------+
+1 row in set (0.00 sec)
+
+mysql> select @value1,@value2;
++---------+---------+
+| @value1 | @value2 |
++---------+---------+
+|    2100 |   24000 |
++---------+---------+
+1 row in set (0.00 sec)
+
+Example12: Demonstration on both IN and OUT parameter
+-----------------------------------------------------
+CREATE  PROCEDURE getSalary(IN x int,OUT y double)
+BEGIN
+    select salary into y from myemp where emp_id=x;
+END 
+
+mysql> call getSalary(105,@sal);
+
+ select @sal;
++------+
+| @sal |
++------+
+| 4800 |
++------+
+1 row in set (0.00 sec)
+
+==========================================================================================
+Introduction to the MySQL DROP PROCEDURE statement
+
+The DROP PROCEDURE statement deletes a stored procedure created by the CREATE PROCEDURE statement.
+DROP PROCEDURE [IF EXISTS] sp_name;
+
+In this syntax:
+    First, specify the name of the stored procedure (sp_name) that you want to delete after the DROP PROCEDURE keywords.
+    Second, use IF EXISTS option to conditionally drop the stored procedure if it exists.
+
+When you drop a procedure that does not exist without using the IF EXISTS option, MySQL will issue an error. In this case, if you use the IF EXISTS option, MySQL will issue a warning instead.
+The statement SHOW WARNINGS shows the warning:
+
+SHOW WARNINGS;
+=============================================================================================
+==================================================================================
+When we have several procedures in the MySQL server, it is very important to list all procedures. It is because sometimes the procedure names are the same in many databases. In that case, this query is very useful. We can list all procedure stored on the current MySQL server as follows:
+
+    SHOW PROCEDURE STATUS [LIKE 'pattern' | WHERE search_condition]  
+
+SHOW PROCEDURE STATUS WHERE db = 'MYSQL21';
+SHOW PROCEDURE STATUS LIKE '%pattern%'
+=================================================================================
+
+MySQL IF Statement
+
+The IF statement has three forms:
+
+    IF...THEN statement: Evaluate one condition and execute a code block if the condition is true.
+    IF...THEN...ELSE statement: Evaluate one condition and execute a code block if the condition is true; otherwise, execute another code block.
+    IF...THEN...ELSEIF...ELSE statement: Evaluate multiple conditions and execute a code block if a condition is true. If all conditions are false, execute the code block in the ELSE branch.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+IF-THEN statement
+The IF...THEN statement allows you to execute a set of SQL statements based on a specified condition.
+
+syntax:
+IF condition THEN 
+   statements;
+END IF;
+
+In this syntax:
+    First, define a condition to execute the code between the IF...THEN and END IF . If the condition is true, the statements between IF-THEN and END IF will execute. Otherwise, control is passed to the next statement following the END IF.
+    Second, specify the code that will execute if the condition evaluates to TRUE.
+==========================================================
+    DELIMITER $$  
+    CREATE PROCEDURE myResult10(original_rate int,OUT discount_rate NUMERIC(6,2))  
+                BEGIN  
+             IF (original_rate>200) THEN  
+                SET discount_rate=original_rate*.5;  
+             END IF;  
+             select discount_rate;  
+         END$$  
+    DELIMITER ;
+
+ call myresult10(278,@p);
+ 
++---------------+
+| discount_rate |
++---------------+
+|        139.00 |
++---------------+
+=============================================================
+
+Next, take two variables and set the value for both as below:
+
+    mysql> set @p = 600;  
+   Now, call the stored procedure function to check the output.
+
+    mysql> call myResult(@p, @dp)  
++---------------+
+| discount_rate |
++---------------+
+|        300.00 |
++---------------+
+
+=====================================================================================================
+
+IF-THEN-ELSE statement
+
+In case you want to execute other statements when the condition in the IF branch does not evaluate to TRUE, you can use the IF-THEN-ELSE statement as follows:
+
+IF condition THEN
+   statements;
+ELSE
+   else-statements;
+END IF;
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE changename000(
+    IN  empno INT, Out new_lastname varchar(255)) 
+    BEGIN
+declare code int ;
+      SELECT  officecode into code     FROM employees
+    WHERE employeenumber = empno;
+    IF  code >= 5 THEN
+        SET new_lastname = 'king';
+   ELSE
+ SET new_lastname = 'not king';
+    END IF;
+select new_lastname;
+END$$
+
+DELIMITER ;
+
+call changename000(1612,@name);
+
+===================================================================================================
+CREATE  procedure maxOfTwo(IN x int,IN y int,OUT res int)
+BEGIN
+    if x>y then
+        set res = x;
+    else    
+        set res = y;
+    end if;
+select res;
+END $$
+delimiter ;
+mysql> call maxOfTwo(10,20,@res);
+
+mysql> select @res;
++------+
+| @res |
++------+
+|   20 |
++------+
+
+----------------------------------------------------------------------------------------------
+ DELIMITER $$
+    CREATE PROCEDURE myResult19( pcode int, mrp1 decimal(10,2),OUT discount_rate NUMERIC(6,2))
+                     BEGIN
+                  IF (mrp1>200) THEN
+                     SET discount_rate=mrp1*.5;
+              ELSE
+              set discount_rate=0;
+                  END IF;
+                  select pcode, discount_rate;
+              END$$
+
+     DELIMITER ;
+ call myresult19(1,100,@p);
++-------+---------------+
+| pcode | discount_rate |
++-------+---------------+
+|     1 |          0.00 |
++-------+---------------+
+1 row in set (0.00 sec)
+====================================================================
+
+IF-THEN-ELSEIF-ELSE statement
+
+The IF-THEN-ELSEIF-ELSE statement allows you to check multiple conditions sequentially. Here’s the basic syntax of the IF-THEN-ELSEIF-ELSE statement:
+
+IF condition THEN
+   statements;
+ELSEIF elseif-condition THEN
+   statements;
+...
+ELSE
+   statements;
+END IF;
+In this syntax:
+
+    If the initial condition is true, its associated statements are executed. If it’s false, the program checks the next condition (ELSEIF).
+    If any of the ELSEIF conditions are true, the corresponding statements are executed.
+    If none of the conditions is true, the statements in the ELSE block are executed.
+
+DELIMITER $$
+
+CREATE PROCEDURE changename14(
+    IN  empno INT, Out new_lastname varchar(255)) 
+    BEGIN
+declare code int ;
+      SELECT  officecode into code     FROM employees
+    WHERE employeenumber = empno;
+    IF  code < 5 THEN
+        SET new_lastname = 'king';
+   ELSEIF code > 5 THEN
+ SET new_lastname = 'not king';
+ELSE
+SET new_lastname = 'QUEEN';
+
+    END IF;
+END$$
+
+DELIMITER ;
+
+call changename14(1625,@name);
+select @name;
+--------------------------------------------------------------------------------------
+    DELIMITER $$
+     CREATE PROCEDURE myResult60(original_rate NUMERIC(6,2),OUT discount_rate NUMERIC(6,2))
+              NO SQL
+               BEGIN
+                  IF (original_rate>500) THEN
+                     SET discount_rate=original_rate*.5;
+                 ELSEIF (original_rate<=500 AND original_rate>250) THEN
+                     SET discount_rate=original_rate*.8;
+                 ELSE
+                     SET discount_rate=original_rate;
+                  END IF;
+                  select original_rate, discount_rate;
+              END$$
+mysql>     DELIMITER ;
+mysql> call myresult60(966,@p);
++---------------+---------------+
+| original_rate | discount_rate |
++---------------+---------------+
+|        966.00 |        483.00 |
++---------------+---------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+=============================================================================
+Example : Max of three numbers
+-------------------------------
+CREATE  PROCEDURE maxOfThree(x int,y int,z int,OUT res int)
+BEGIN
+        if x>y and x>z then
+            set res = x;
+        elseif y>z then
+            set res = y;
+        else
+            set res = z;
+        end if;
+END
+
+mysql> call maxOfThree(10,20,30,@res);
+
+mysql> select @res;
++------+
+| @res |
++------+
+|   30 |
++------+
+1 row in set (0.00 sec)
+
+
+===========================================================================
+
+loops in stored procedure
+--------------
+if we want to repeat one or more statements, then we should go for loops.
+The MySQL LOOP statement could be used to run a block of code or set of statements, again and again, depending on the condition
+  
+  there are three types of loops are existed...
+
+1. loop
+2. repeat until
+3. while loop
+
+LOOP:
+The LOOP statement allows you to execute one or more statements repeatedly.
+
+[begin_label:] LOOP
+    statements;
+END LOOP [end_label]
+
+
+NOTE: terminate the loop when a condition is true by using IF and LEAVE statements as follows:
+
+[label]: LOOP
+    ...
+    -- terminate the loop
+    IF condition THEN
+        LEAVE [label]; //The loop exits when the LEAVE statement is reached.
+    END IF;
+    ...
+END LOOP;
+
+
+
+NOTE: you can use the ITERATE statement to skip the current iteration and start a new one:
+
+[loop_label]: LOOP
+    ...
+    -- terminate the loop
+    IF condition THEN
+        ITERATE [label];
+    END IF;
+    ...
+END LOOP;
+
+Note that the LEAVE statement functions similarly to the break statement while the ITERATE statement works equivalently to the continue statement in other programming languages like PHP, C#, and Java.================================================================================
+delimiter ##
+CREATE  PROCEDURE myloop()
+BEGIN
+    declare i int default 1;
+    L: loop
+        select i;
+        set i=i+1;
+        if i=5 then
+            leave L;
+        end if;
+    end loop L;
+END ##
+delimiter ;
+
+ call myloop();
++------+
+| i    |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
++------+
+| i    |
++------+
+|    2 |
++------+
+1 row in set (0.00 sec)
+
++------+
+| i    |
++------+
+|    3 |
++------+
+1 row in set (0.01 sec)
+
++------+
+| i    |
++------+
+|    4 |
++------+
+1 row in set (0.01 sec)
+======================================================================
+
+
+
+
+
+delimiter @@
+create procedure getloopdata1()
+begin
+declare i int ;
+SET i=0;
+loop1: LOOP
+    SET i=i+1;
+    IF i>=10 THEN          /*Last number - exit loop*/
+         LEAVE loop1;
+    ELSEIF MOD(i,2)=0 THEN /*Even number - try again*/
+         ITERATE loop1;
+    END IF;
+    SELECT CONCAT(i," is an odd number");
+
+END LOOP loop1;
+end @@
+delimiter ;
+ call getloopdata1();
+============================================================================
+
+=====================================================================================================
+CREATE TABLE calendar (
+    date DATE PRIMARY KEY,
+    month INT NOT NULL,
+    quarter INT NOT NULL,
+    year INT NOT NULL
+);
+
+ define a stored procedure fillDates that inserts rows into the calendars table:
+
+DELIMITER //
+
+CREATE PROCEDURE fil(
+	IN startDate DATE,
+    IN endDate DATE
+)
+BEGIN
+	DECLARE currentDate DATE DEFAULT startDate;
+    
+	insert_date: LOOP
+		-- increase date by one day
+		SET currentDate = DATE_ADD(currentDate, INTERVAL 1 DAY);
+        
+        -- leave the loop if the current date is after the end date
+        IF currentDate > endDate THEN
+			LEAVE insert_date;
+        END IF;
+        
+        -- insert date into the table
+        INSERT INTO calendar(date, month, quarter, year)
+        VALUES(currentDate, MONTH(currentDate), QUARTER(currentDate), YEAR(currentDate));
+		
+    END LOOP insert_date;
+END //
+
+DELIMITER ;
+
+
+The stored procedure takes two input parameters, startDate and endDate, representing the beginning and end of the date range.
+The stored procedure uses a loop, incrementing the currentDate by one day in each iteration until it reaches the endDate.
+During each iteration, the stored procedure inserts the current date into the calendars table, along with the corresponding month, quarter, and year information.
+The loop is terminated when the current date exceeds the specified end date.
+
+CALL fil('2024-06-10','2024-06-15');
+=========================================================
+WHILE LOOP
+
+The WHILE loop is a loop statement that executes a block of code repeatedly as long as a condition is true.
+
+while loop syntax
+-----------------
+
+<label> : while condition do
+        ------------
+        ------------
+end while <label>;
+
+
+==========================================
+delimiter //
+CREATE  PROCEDURE  myloop3()
+BEGIN
+    declare i int default 0;
+    LLL: while i<=10 do
+        select i;
+        set i = i + 2;
+    end while LLL;
+END//
+delimiter ;
+
+ call myloop3();
++------+
+| i    |
++------+
+|    0 |
++------+
+1 row in set (0.00 sec)
+
++------+
+| i    |
++------+
+|    2 |
++------+
+1 row in set (0.00 sec)
+
++------+
+| i    |
++------+
+|    4 |
++------+
+1 row in set (0.01 sec)
+
++------+
+| i    |
++------+
+|    6 |
++------+
+1 row in set (0.01 sec)
+
++------+
+| i    |
++------+
+|    8 |
++------+
+1 row in set (0.01 sec)
+
++------+
+| i    |
++------+
+|   10 |
++------+
+1 row in set (0.01 sec)
+
+===================================================
+Example: Factorial of the given number
+----------------------------------------
+CREATE PROCEDURE fact(n int)
+BEGIN
+    declare i int default 1;
+    declare res int default 1;
+    L: while i<=n do
+        set res = res * i;
+        set i=i+1;
+    end while L;
+    select res;
+END
+
+mysql> call fact(5);
++------+
+| res  |
++------+
+|  120 |
++------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+======================================================================
+Example20: create SP to fill dates into calendar table based on give inputs?
+----------------------------------------------------------------------------
+delimiter ##
+CREATE PROCEDURE fillDate1(start_date DATE,end_date DATE)
+BEGIN
+    declare currentDate DATE default start_date;
+    L: while currentDate < end_date do
+        set currentDate = DATE_ADD(currentDate,INTERVAL 1 DAY);
+        insert into calendars values(
+        currentDate,
+        DAY(currentDate),
+        MONTH(currentDate),
+        YEAR(currentDate));
+    end while L;
+END##
+delimiter ;
+
+ select * from calendars;
+
+
+ call fillDate1('2024-05-15','2024-05-20');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> select * from calendar;
++------------+------+-------+------+
+| date       | day  | month | year |
++------------+------+-------+------+
+| 2024-05-16 |   16 |     5 | 2024 |
+| 2024-05-17 |   17 |     5 | 2024 |
+| 2024-05-18 |   18 |     5 | 2024 |
+| 2024-05-19 |   19 |     5 | 2024 |
+| 2024-05-20 |   20 |     5 | 2024 |
++------------+------+-------+------+
+5 rows in set (0.00 sec)
+==============================================================
+=======================================================
+
+Introduction to the MySQL REPEAT statement
+
+The REPEAT statement creates a loop that repeatedly executes a block of statements until a condition is true.
+
+<label> : repeat
+    ----------
+    ----------
+    ----------
+    until expression;
+end repeat <label>;
+
+The REPEAT repeatedly executes the statements inside its block until the specified condition becomes true.
+It’s important to note that the REPEAT checks the condition after the execution of the block, meaning that the block always executes at least once.
+
+Example:
+----------
+delimiter @@
+CREATE PROCEDURE myloop()
+BEGIN
+    declare i int default 1;
+    LL: repeat
+        select i;
+        set i = i + 2;
+    until i>=10
+    end repeat LL;
+END@@
+delimiter ;
+ call myloop();
++------+
+| i    |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
++------+
+| i    |
++------+
+|    3 |
++------+
+1 row in set (0.00 sec)
+
++------+
+| i    |
++------+
+|    5 |
++------+
+1 row in set (0.00 sec)
+
++------+
+| i    |
++------+
+|    7 |
++------+
+1 row in set (0.01 sec)
+
++------+
+| i    |
++------+
+|    9 |
++------+
+1 row in set (0.01 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+=========================================================================
+
+ create a stored procedure called RepeatDemo that uses the REPEAT statement to concatenate numbers from 1 to 9:
+
+DELIMITER $$
+CREATE PROCEDURE RepeatDemo1()
+BEGIN
+    DECLARE counter INT DEFAULT 1;
+    DECLARE result VARCHAR(100) DEFAULT '';
+    
+    REPEAT
+        SET result = CONCAT(result,counter,',');
+        SET counter = counter + 1;
+    UNTIL counter >= 10
+    END REPEAT;
+    
+    -- display result
+    SELECT result;
+END$$
+
+DELIMITER ;
+
+In this stored procedure:
+
+First, declare two variables counter and result and set their initial values to 1 and blank.
+The counter variable is used for counting from 1 to 9 in the loop. And the result variable is used for storing the concatenated string after each loop iteration.
+Second, append counter value to the result variable using the CONCAT() function until the counter is greater than or equal to 10.
+
+The following statement calls the RepeatDemo() stored procedure:
+
+CALL RepeatDemo();
+=====================================================================

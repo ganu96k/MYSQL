@@ -1,0 +1,76 @@
+MySQL Temporary Table
+
+==>MySQL has a feature to create a special table called a Temporary Table that allows us to keep temporary data.We can reuse this table several times in a particular session.
+==>This table is visible and accessible only for the current session. MySQL deletes this table automatically as long as the current session is closed or the user terminates the connection. 
+==>We can also use the DROP TABLE command for removing this table explicitly when the user is not going to use it.
+==>MySQL uses the CREATE TEMPORARY TABLE statement to create a temporary table.
+==>The user cannot create two temporary tables with the same name in the same session.
+==>A temporary table in MySQL will be dropped automatically when the user closes the session or terminates the connection manually.
+===========================================================================
+Syntax of Creating Temporary Table
+
+In MySQL, the syntax of creating a temporary table is the same as the syntax of creating a normal table statement except the TEMPORARY keyword.
+
+    mysql> CREATE TEMPORARY TABLE table_name (  
+       column_1, column_2, ..., table_constraints  
+    );  
+
+If the user wants to create a temporary table whose structure is the same as an existing table in the database, then the above statement cannot be used. Instead, we use the syntax as given below:
+Mysql> CREATE TEMPORARY TABLE temporary_table_name SELECT * FROM original_table_name;
+=================================================================================================
+mysql>  CREATE TEMPORARY TABLE Students( student_name VARCHAR(40) NOT NULL, total_marks DECIMAL(12,2) NOT NULL, total_subjects int NOT NULL);
+INSERT INTO Students(student_name, total_marks, total_subjects) VALUES ('Joseph', 150.75, 2), ('Peter', 180.75, 2);
+
+It is to be noted that when we run a SHOW TABLES command, then our temporary table will not be shown on the list. Also, if we close the current session and then will execute the SELECT statement, we will get a message saying that no data available in the database, and even the temporary table will not exist.
+========================================================================================
+
+
+A Temporary Table whose structure is based on a normal table
+
+create a temporary table whose structure is based on the already available tables in the database.
+Here, the structure of a temporary table is created by using the SELECT statement and merge two tables using the INNER JOIN clause and sorts them based on the officecode.
+
+   mysql>  CREATE TEMPORARY TABLE temp_emp
+       SELECT o.officecode, o.city, e.firstname, e.email
+        FROM offices o
+        INNER JOIN Employees e ON e.officecode = o.officecode
+        ORDER BY o.officecode;
+
+select * from temp_emp;
+
+We can also perform queries from the above temporary table "temp_customers" similar to the querying data from a permanent table. 
+ //select officecode from temp_emp group by officecode;
+// alter table temp_emp
+     add column ph int after email;
+
+
+mysql> desc temp_emp;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| officecode | varchar(10)  | NO   |     | NULL    | NULL  |
+| city       | varchar(50)  | NO   |     | NULL    | NULL  |
+| firstname  | varchar(50)  | NO   |     | NULL    | NULL  |
+| email      | varchar(100) | NO   |     | NULL    | NULL  |
++------------+--------------+------+-----+---------+-------+
+===================================================================================
+A temporary table can be created by the user with the same name as a normal table in a database. For example, if the user creates a temporary table with the name student, then the existing student table cannot be accessible. So, the user performs any query against the student table, is now going to refer to the temporary student table. When the user removes a temporary table, the permanent student table becomes accessible again.
+CREATE  TABLE temp_emp( student_name VARCHAR(40) NOT NULL, total_marks DECIMAL(12,2) NOT NULL, total_subjects int
+ NOT NULL)
+    -> ;
+
+How to Drop Temporary Table in MySQL
+
+==>A temporary table in MySQL will be dropped automatically when the user closes the session or terminates the connection manually.
+MySQL allows us to remove the temporary table using the DROP TABLE statement. But, it"s a good practice to use the TEMPORARY keyword with the DROP TABLE statement. 
+This keyword helps us to avoid the mistake of deleting a permanent table when the temporary table and permanent table have the same name in the current session. So, it is recommended to use the following query for removing the temporary table:
+
+    mysql> DROP TEMPORARY TABLE table_name;  
+
+This query will not remove a permanent table of the database that means it only deletes a temporary table. 
+==================================================================================
+
+
+
+
+

@@ -1,0 +1,114 @@
+==>Database engines are MySQL components that can handle SQL operations like create, read, update data from a database. It handles create, read, and update operations for storing and managing the information in a database
+==>MySQL table types/storage engines are essential features that can be used effectively for maximizing the database's performance.
+
+==>There are two types of engines in MySQL:  transactional and non-transactional.
+Transactional Databases: In this type, we can roll back the write operations on the database if they are left incomplete. These operations are known as transactions. Majorly, modern engines are transactional.
+
+    mysql> SHOW ENGINES;  
+
+
+The following are various table types/storage engines supports in MySQL:
+
+    ISAM:
+ISAM Table
+
+It is abbreviated as Indexed Sequential Access Method. This table type/storage engine has been deprecated and removed from MySQL version 5.x. MyISAM now replaces the functionalities of this table. The size of an ISAM table is 4 GB, which requires expensive hardware. It is not portable.
+
+======================================================================
+InnoDB Storage Engine:
+InnoDB: InnoDB is a storage engine for DBMS MySQL and MariaDB.It is the default storage engine for MySQL versions 5.5 and higher. It replaced MyISAM as the default engine.
+
+Features:
+
+    It provides standard ACID-compliant transaction features, along with foreign key support. Oracle recommends InnoDB for tables.
+    It supports multi-version concurrency control, crash-recovery, and rollback operations. Multi-user performance is possible due to row-level locking.
+    It is used in the MariaDB server too. To maintain data integrity and security, InnoDB supports foreign key constraints.
+    InnoDB supports buffers that cache data as well as indexes.
+    It offers a table locking method, which means only one user can alter the table at a time.
+
+Advantages:
+
+    Supports ACID (Atomicity, Consistency, Isolation, and Durability) properties for securing user’s data.
+    Access to multiple users with high performance and consistent reads in Oracle-style.
+     Supports usage of foreign keys that help in the consistent update, insert and delete operations. Also, it helps in maintaining integrity in the contents of the tables of the database. 
+ ====================================================================== 
+   MyISAM
+
+It is an extension of the ISAM storage engine. The MyISAM table types are optimized for compression and speed and can be easily portable between system to system. Before version 5.5, if we do not specify the table type during table creation, it was the default storage engine. From version 5.x, InnoDB is used as the default table type/storage engine.
+
+The MyISAM table size is dependent on the OS and can be up to 256 TB. It can be compressed into read-only tables that save spaces in memory. MyISAM table type can store 64 keys per table and contains 1024 bytes maximum key length. The MyISAM tables work very fast, but they are not transaction-safe.
+
+Advantages of MyISAM
+
+    If you are new, it will be best to start with MyISAM because it is simple to design and create.
+    It is faster than other storage engines in general conditions.
+    It provides full-text indexing/searching.
+
+Disadvantages of MyISAM
+
+    MyISAM tables are not transactions-safe.
+    It has poor data integrity and crash recovery.
+    When we lock the entire table, in that case, MyISAM is slower than InnoDB.
+=========================================================
+    MERGE
+
+MERGE: Tables created using the MERGE engine are used to handle a large volume of data easily. It is a collection of identical MyISAM tables that can be used as one. Thus, it is also known as the MRG_MyISAM engine. It is good for data warehousing environments.
+
+Features:
+
+    It was introduced in MySQL  3.23.25 version.
+    UNION and INSERT_METHOD are two unique features of MERGE tables.
+    MERGE tables do not have PRIMARY KEY or UNIQUE indexes as they cannot enforce uniqueness over all tables.
+
+Advantages:
+
+    It is a collection of identical MyISAM tables that can be used as one table. Memory is saved due to it.
+    It can perform the most efficient repair of individual tables rather than repairing a single large table which is made by merging these individual tables.
+    Merge tables are not limited to the file size of the operating system, unlike MyISAM tables.
+
+Disadvantages:
+
+    Only identical MyISAM tables can be used to merge.
+    If the MERGE table is nontemporary, it is necessary for merge tables to be nontemporary. If the MERGE table is temporary, the MyISAM tables can be a mixture of temporary and nontemporary.
+    Some MyISAM features are not available in MERGE tables.
+
+==================================================================
+
+    MEMORY (HEAP)
+MEMORY: It is considered to be the fastest engine used to usually create temporary tables in memory (also known as HEAP). Thus data is lost when the database is restarted. It is non-transactional. It is useful for quick looks up of references and other identifying data. It stores all data in RAM for faster access rather than storing data in disks. It is widely used for read-only caches of data from tables or for temporary usage.
+
+Features:
+
+    It does not create any files on disk.
+    MEMORY tables cannot contain BLOB or TEXT columns.
+    AUTO_INCREMENT columns are supported.
+    VARCHAR is stored using fixed-length i.e. it uses fixed-length row-storage format.
+
+Advantages:
+
+    Data is encrypted which is implemented in the server via encryption functions.
+    Supports B-tree indexes.
+    Offers low-level locking and multiple-thread operation for low contention between clients.
+
+Disadvantages:
+
+    MEMORY tables cannot be partitioned.
+    Memory can’t be reclaimed if you delete individual rows from a MEMORY table
+
+  CSV: Its tables are really text files with comma-separated values. CSV tables let you import or dump data in CSV format, to exchange data with scripts and applications that read and write that same format. Because CSV tables are not indexed, you typically keep the data in InnoDB tables during normal operation, and only use CSV tables during the import or export stage.
+
+    Archive: These compact, unindexed tables are intended for storing and retrieving large amounts of seldom-referenced historical, archived, or security audit information.
+
+    Blackhole: The Blackhole storage engine accepts but does not store data, similar to the Unix /dev/null device. Queries always return an empty set. These tables can be used in replication configurations where DML statements are sent to replica servers, but the source server does not keep its own copy of the data.
+
+    NDB (also known as NDBCLUSTER): This clustered database engine is particularly suited for applications that require the highest possible degree of uptime and availability.
+
+    Merge: Enables a MySQL DBA or developer to logically group a series of identical MyISAM tables and reference them as one object. Good for VLDB environments such as data warehousing.
+
+    Federated: Offers the ability to link separate MySQL servers to create one logical database from many physical servers. Very good for distributed or data mart environments. 
+We can use the below query that determines which table types/storage engines our MySQL server supports.
+
+
+
+
+=============================================================

@@ -1,0 +1,212 @@
+
+
+Patients Table
+Patient ID 	Patient Name 	Sex 	Age 	MedInsuranceNo 	AadharNo
+	01 			Sheela 		F 	23 			Med0291 	839292319012
+	02 			Rehan 		M 	21 			Med8421 	123456789012
+	03 			Anay 		M 	56 			Med4203 	848298469201
+	04 			Mahira 		F 	42 			Med4792 	724723021922
+	05 			Nishant 	M 	12 			Med8419 	472038311099
+
+Super Key
+
+Super Key is a set of attributes that can uniquely identify a table. A single table can have multiple super keys. A candidate key, primary key and a unique key can be a super key, but the reverse does not hold true.
+Example:
+In our above example we have chosen the PatientID, MedInsuranceNo and Aadhar No to uniquely identify tuples. So the super key set will be as follows:
+
+    {PatientID}
+    {MedInsuranceNo}
+    {AadharNo}
+    {PatientID, MedInsuranceNo}
+    {PatientID, AadharNo}
+    {MedInsuranceNo, AadharNo}
+    {PatientID, MedInsuranceNo, AadharNo}
+
+
+Candidate Key
+
+Candidate Key is a set of attributes that can uniquely identify a table. A single table can have multiple candidate keys. Out of all the chosen candidate keys, one of the keys is selected as the primary key.
+
+Example:
+
+PatientID, MedInsuranceNo, AadharNo can be chosen as the candidate keys from the Patients table.
+Rules for Candidate Key
+
+    Unique values must be present in all columns, chosen as candidate key
+    A single table can have multiple candidate keys
+    Null values can be present in the column chosen as candidate key
+
+Apply Candidate Key while creating table
+CREATE TABLE Patients (
+PatientID INT UNIQUE,
+PatientName VARCHAR(255),
+Sex VARCHAR(255),
+Age VARCHAR(255),
+MedInsuranceNo VARCHAR(255) UNIQUE,
+AadharNo INT UNIQUE,
+);
+===================================================================
+Primary Key
+
+Primary Key is a set of attributes that can uniquely identify a table. A single table can have only one primary key. Out of all the chosen candidate keys, one of the keys is selected as the primary key.
+
+Example:
+
+PatientID, MedInsuranceNo, AadharNo are chosen as the candidate keys from the Patients table. Either of them can be chosen as a Primary key.
+Rules for Primary Key
+
+    Unique values must be present in all columns, chosen as primary key
+    A single table can have only one primary key
+    No NULL value must be present in the column chosen as primary key
+    A new row cannot be inserted with an existing primary key
+
+Apply Primary Key while creating table
+
+CREATE TABLE Patients (
+PatientID INT NOT NULL PRIMARY KEY,
+PatientName VARCHAR(255) NOT NULL,
+Sex VARCHAR(255),
+Age VARCHAR(255),
+MedInsuranceNo VARCHAR(255,
+AadharNo INT
+);
+
+Alternate Key
+As the name suggests, all the candidate keys which are not selected as primary keys are known as the Alternate Key.
+Example:
+If the PatientID is selected as the Primary Key, then the MedInsuranceNo and the AadharNo are known as the alternate keys.
+
+
+
+Unique Key
+
+The Unique key is quite similar to primary keys in a database. The only difference is that the unique keys allow a single NULL value in the column and must not have any duplicate values. 
+Example:
+MedInsuranceNo can be considered as a unique key.
+
+
+Composite Key
+As the  name suggests a composite key is a combination of multiple columns that can uniquely identify tuples.
+Example:
+PaitentID and AnnualCheckupMonth can be considered together as a composite key.
+
+CREATE TABLE Patients (
+PatientID INT,
+PatientName VARCHAR(255),
+Sex VARCHAR(255),
+Age VARCHAR(255),
+MedInsuranceNo VARCHAR(255),
+AadharNo INT,
+PRIMARY KEY (PatientID, MedInsuranceNo)
+);
+
+
+====================================================================================================
+
+
+
+
+
+
+
+
+What is an ER diagram?
+
+An Entity Relationship Diagram (ERD) is a visual representation of different entities within a system and how they relate to each other. It is a tool used to design and model relational databases, and shows the logical structure of the database. ER diagrams use symbols to represent entities, attributes, and relationships, which help to illustrate the relationships between the entities in the database.
+
+
+========================================================================================
+Benefits of ER diagrams
+
+==>ER diagrams constitute a very useful tool for creating and manipulating databases. 
+==> ER diagrams are easy to understand and do not require a person to undergo extensive training to be able to work with it efficiently and accurately. This means that designers can use ER diagrams to easily communicate with developers, customers, and end users, regardless of their IT proficiency.
+==>ER diagrams are readily translatable into relational tables which can be used to quickly build databases. In addition, ER diagrams can directly be used by database developers as the blueprint for implementing data in specific software applications.
+======================================================================================================
+Component of ER Diagram
+
+1. Entity:
+
+An entity may be any object, class, person or place. In the ER diagram, an entity can be represented as rectangles.
+Consider an organization as an example- manager, product, employee, department etc. can be taken as an entity.
+
+Entity is of two types:
+weak entity
+An entity that depends on another entity called a weak entity. The weak entity doesn't contain any key attribute of its own. The weak entity is represented by a double rectangle.
+loan and installment
+
+Strong entities: Also known as regular entities, these entities have attributes that uniquely identify each instance. They can exist independently of other entities.
+
+2. Attribute
+
+The attribute is used to describe the property of an entity. Ellipse is used to represent an attribute.
+.
+
+Types of attributes:
+
+a. Key Attribute
+The key attribute is used to represent the main characteristics of an entity. It represents a primary key. The key attribute is represented by an ellipse with the text underlined. 
+
+b. Composite Attribute
+
+An attribute that composed of many other attributes is known as a composite attribute. The composite attribute is represented by an ellipse, and those ellipses are connected with an ellipse.
+
+
+c. Multivalued Attribute
+
+An attribute can have more than one value. These attributes are known as a multivalued attribute. The double oval is used to represent multivalued attribute.
+
+For example, a student can have more than one phone number.
+			For example, a teacher entity can have multiple subject values.
+
+
+d. Derived Attribute
+
+An attribute that can be derived from other attribute is known as a derived attribute. It can be represented by a dashed ellipse.
+
+For example, A person's age changes over time and can be derived from another attribute like Date of birth.
+for a circle entity, the area can be derived from the radius.
+
+
+Relationship
+
+A relationship is used to describe the relation between entities.The diamond shape showcases a relationship in the ER diagram.
+It depicts the relationship between two entities.
+ student and the course are entities, and study is the relationship between them. 
+
+Relationship is of 4 types
+1)One-to-One Relationship
+
+When a single element of an entity is associated with a single element of another entity, it is called a one-to-one relationship.
+
+For example, a student has only one identification card and an identification card is given to one person.
+
+2)One-to-Many Relationship
+
+When a single element of an entity is associated with more than one element of another entity, it is called a one-to-many relationship
+
+For example, a customer can place many orders, but an order cannot be placed by many customers.
+
+3)Many-to-One Relationship
+
+When more than one element of an entity is related to a single element of another entity, then it is called a many-to-one relationship.
+
+For example, students have to opt for a single course, but a course can have many students.
+
+4)Many-to-Many Relationship
+
+When more than one element of an entity is associated with more than one element of another entity, this is called a many-to-many relationship.
+
+For example, you can assign an employee to many projects and a project can have many employees.
+
+=================================================================================
+How to Draw ER Diagrams
+
+Below points show how to go about creating an ER diagram.
+
+   1)Identify all the entities in the system. An entity should appear only once in a particular diagram. Create rectangles for all entities and name them properly.
+   2) Identify relationships between entities. Connect them using a line and add a diamond in the middle describing the relationship.
+    3)Add attributes for entities. Give meaningful attribute names so they can be understood easily.
+=================================================================================================
+
+
+
